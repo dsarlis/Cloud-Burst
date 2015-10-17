@@ -1,2 +1,2 @@
 # Cloud-Burst
-F15-Cloud-Computing
+Repository for Cloud Computing Course Fall 2015
