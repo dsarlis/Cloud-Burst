@@ -6,13 +6,31 @@
         <listener-class>org.cloudburst.server.CloudBurstContext</listener-class>
     </listener>
     <servlet>
-        <servlet-name>Cloud Burst Server</servlet-name>
-        <servlet-class>org.cloudburst.server.servlets.BurstServlet</servlet-class>
+        <servlet-name>Q1</servlet-name>
+        <servlet-class>org.cloudburst.server.servlets.Q1Servlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>Q2</servlet-name>
+        <servlet-class>org.cloudburst.server.servlets.Q2Servlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>Heartbeat</servlet-name>
+        <servlet-class>org.cloudburst.server.servlets.HeartBeatServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Cloud Burst Server</servlet-name>
-        <url-pattern>/</url-pattern>
+        <servlet-name>Q1</servlet-name>
+        <url-pattern>/q1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Q2</servlet-name>
+        <url-pattern>/q2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Heartbeat</servlet-name>
+        <url-pattern>/heartbeat</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>jsp</servlet-name>
