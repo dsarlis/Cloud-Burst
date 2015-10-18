@@ -39,7 +39,7 @@ public class Q1Servlet extends HttpServlet {
 
         finalMessage.append(FIRST_LINE);
         finalMessage.append(simpleDateFormat.format(Calendar.getInstance().getTime())).append("\n");
-        finalMessage.append(decryptedMessage);
+        finalMessage.append(decryptedMessage).append("\n");
 
         response.getOutputStream().write(finalMessage.toString().getBytes());
     }
