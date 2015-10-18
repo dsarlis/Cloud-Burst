@@ -1,5 +1,6 @@
 package org.cloudburst.server;
 
+import org.cloudburst.server.servlets.Q1Servlet;
 import org.cloudburst.server.util.LoggingConfigurator;
 import org.cloudburst.server.util.MySQLConnectionFactory;
 import org.slf4j.Logger;
@@ -18,12 +19,15 @@ public class CloudBurstContext implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         LoggingConfigurator.configureFor(LoggingConfigurator.Environment.PRODUCTION);
         Properties boneCPConfigProperties = new Properties();
+        Properties configProperties = new Properties();
 
         try {
             boneCPConfigProperties.load(CloudBurstContext.class.getResourceAsStream("/bonecp.properties"));
+            configProperties.load(CloudBurstContext.class.getResourceAsStream("/config.properties"));
         } catch (IOException ex) {
-            logger.error("Problem reading MySQL properties", ex);
+            logger.error("Problem reading properties", ex);
         }
+        Q1Servlet.setFirstLine(configProperties.getProperty("team.id"), configProperties.getProperty("team.aws.id"));
         MySQLConnectionFactory.init(boneCPConfigProperties);
         TimeZone.setDefault(TimeZone.getTimeZone("Etc/GMT+4"));
         logger.info("Server started");
@@ -36,3 +40,4 @@ public class CloudBurstContext implements ServletContextListener {
     }
 
 }
+

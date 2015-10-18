@@ -17,6 +17,11 @@ public class Q1Servlet extends HttpServlet {
 
     private final static Logger logger = LoggerFactory.getLogger(Q1Servlet.class);
     private CipherService cipherService = new CipherService();
+    private static String FIRST_LINE;
+
+    public static void setFirstLine(String teamId, String teamAWSId) {
+        FIRST_LINE = teamId + "," + teamAWSId + "\n";
+    }
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
@@ -32,7 +37,7 @@ public class Q1Servlet extends HttpServlet {
         StringBuilder finalMessage = new StringBuilder();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        finalMessage.append("TEAMID,TEAM_AWS_ACCOUNT_ID\n");
+        finalMessage.append(FIRST_LINE);
         finalMessage.append(simpleDateFormat.format(Calendar.getInstance().getTime())).append("\n");
         finalMessage.append(decryptedMessage);
 

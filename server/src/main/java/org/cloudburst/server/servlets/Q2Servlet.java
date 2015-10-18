@@ -24,7 +24,6 @@ public class Q2Servlet extends HttpServlet {
 
     @Override
     public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        logger.info("CALLED!");
         response.getOutputStream().write(mySQLService.testStatement().getBytes());
     }
 
