@@ -4,6 +4,7 @@ from boto.ec2.autoscale import AutoScaleConnection, Tag
 from boto.exception import EC2ResponseError, BotoServerError
 
 import time
+import os
 from boto.ec2.connection import EC2Connection
 from boto.ec2.elb import HealthCheck, ELBConnection
 from boto.ec2.autoscale import LaunchConfiguration
@@ -184,7 +185,8 @@ def request_spot_instance(manager, bid, image, instance_type, key_name, zone, se
 
 
 def deploy(remove=False):
-    aws_access_key, aws_secret_key= read_properties('/home/federico/CMU/Cloud Computing/Amazon/credentials')
+    aws_access_key = os.environ['CLOUD_BURST_ACCESS_KEY']
+    aws_secret_key = os.environ['CLOUD_BURST_SECRET_KEY']
 
     manager = MSBManager(aws_access_key, aws_secret_key)
     region = 'us-east-1'
