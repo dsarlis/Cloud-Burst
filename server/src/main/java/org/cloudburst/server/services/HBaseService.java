@@ -24,8 +24,7 @@ public class HBaseService {
         try {
             this.table = new HTable(config, tableName);
         } catch (IOException e) {
-            logger.error("IO Exception while trying to connect to HBase table");
-            e.printStackTrace();
+            logger.error("IO Exception while trying to connect to HBase table", e);
         }
         this.tableName = tableName;
         this.columnFamily = columnFamily;
@@ -38,8 +37,7 @@ public class HBaseService {
         try {
             result = table.get(get);
         } catch (IOException e) {
-            logger.error("IO Exception when trying to read from HBase table");
-            e.printStackTrace();
+            logger.error("IO Exception when trying to read from HBase table", e);
         }
         byte[] value = result.getValue(Bytes.toBytes(columnFamily),Bytes.toBytes(qualifier));
 
