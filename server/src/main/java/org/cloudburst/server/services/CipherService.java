@@ -43,41 +43,32 @@ public class CipherService {
         BigInteger xy = new BigInteger(key);
         BigInteger y = xy.divide(X);
         int offset = (y.intValue() % 25) + 1;
-
         int n = (int) Math.sqrt(message.length());
-        StringBuilder[] builders = new StringBuilder[n];
+        StringBuilder result = new StringBuilder();
+        char[][] matrix = new char[n][n];
+        int index = 0;
 
-        for (int index = 0, j = 0, slice = 0; index < message.length(); index++) {
-            int letterValue = INVERSE_MAP.get(message.charAt(index));
-            int letterValueWithoutOffset = letterValue - offset;
-            if (letterValueWithoutOffset < 0) {
-                letterValueWithoutOffset = ABC.length + letterValueWithoutOffset;
-            }
-
-            if (builders[j] == null) {
-                builders[j] = new StringBuilder();
-            }
-            builders[j].append(ABC[letterValueWithoutOffset]);
-            j++;
-            if (j > slice || j == n) {
-                slice++;
-                j = slice < n ? 0 :  (slice % n) + 1;
+        for (int row = 0; row < n; row++) {
+            for (int col = 0; col< n; col++) {
+                matrix[row][col] = message.charAt(index++);
             }
         }
 
-        StringBuilder result = new StringBuilder();
+        for (int slice = 0; slice < 2 * n - 1; ++slice) {
+            int z = slice < n ? 0 : slice - n + 1;
 
-        for (StringBuilder builder : builders) {
-            result.append(builder);
+            for (int j = z; j <= slice - z; ++j) {
+                int letterValue = INVERSE_MAP.get(matrix[j][slice - j]);
+                int letterValueWithoutOffset = letterValue - offset;
+
+                if (letterValueWithoutOffset < 0) {
+                    letterValueWithoutOffset = ABC.length + letterValueWithoutOffset;
+                }
+                result.append(ABC[letterValueWithoutOffset]);
+            }
         }
 
         return result.toString();
-    }
-
-    public static void main(String[] args) {
-        CipherService service = new CipherService();
-
-        System.out.println(service.decrypt("306063896731552281713201727176392168770237379582172677299123272033941091616817696059536783089054693601", "URYYBBJEX"));
     }
 
 }
