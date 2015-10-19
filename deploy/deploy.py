@@ -31,6 +31,10 @@ class MSBManager:
         self.cloud_watch_conn = CloudWatchConnection(aws_access_key, aws_secret_key)
         self.default_cooldown = 60
 
+    def get_security_group(self, name):
+        sgs = [g for g in self.ec2_conn.get_all_security_groups() if g.name == name]
+        return sgs[0] if sgs else None
+
     def create_security_group(self, name, description):
         sgs = [g for g in self.ec2_conn.get_all_security_groups() if g.name == name]
         sg = sgs[0] if sgs else None
@@ -76,6 +80,7 @@ class MSBManager:
                 if sir.id == job_sir_id:
                     instance_id = sir.instance_id
                     break
+            print 'Job {} not ready'.format(job_sir_id)
             time.sleep(60)
 
         self.ec2_conn.create_tags([instance_id], tags)
@@ -190,15 +195,17 @@ def deploy(remove=False):
 
     manager = MSBManager(aws_access_key, aws_secret_key)
     region = 'us-east-1'
-    zone = 'us-east-1b'
+    zone = 'us-east-1a'
     key_name = 'cloudburstkey'
     ssh_http_sg_name = 'SSH/HTTP'
+    http_sg_name = 'HTTP'
     phase = 'phase1'
 
     frontend_image = 'ami-8b3363ee'
     number_of_frontend_servers = 3
-    frontend_server_name = 'Frontend Server'
-    frontend_elb_name = 'Frontend ELB'
+    frontend_server_bid = 0.05
+    frontend_server_name = 'FrontendServer'
+    frontend_elb_name = 'FrontendELB'
     frontend_servers = []
 
     if remove:
@@ -209,15 +216,14 @@ def deploy(remove=False):
     else:
         request_spot_instance_threads = []
         for dummy in xrange(number_of_frontend_servers):
-            t = threading.Thread(target=request_spot_instance, args=(manager, 1.0, frontend_image, 'm3.large', key_name, zone, [ssh_http_sg_name], {'Name': frontend_server_name, '15619project': phase}, frontend_servers, ))
+            t = threading.Thread(target=request_spot_instance, args=(manager, frontend_server_bid, frontend_image, 'm3.large', key_name, zone, [ssh_http_sg_name], {'Name': frontend_server_name, '15619project': phase}, frontend_servers, ))
             t.start()
             request_spot_instance_threads.append(t)
 
         for request_spot_instance_thread in request_spot_instance_threads:
             request_spot_instance_thread.join()
 
-        ssh_http_sg = manager.create_security_group(ssh_http_sg_name, ssh_http_sg_name)
-        print 'Security Group {} created'.format(ssh_http_sg_name)
+        ssh_http_sg = manager.get_security_group(http_sg_name)
         manager.create_elb(frontend_elb_name, zone, phase, ssh_http_sg.id, [frontend_server.id for frontend_server in frontend_servers])
         print 'ELB {} created'.format(frontend_elb_name)
 
