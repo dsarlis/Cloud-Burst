@@ -195,14 +195,14 @@ def deploy(remove=False):
 
     manager = MSBManager(aws_access_key, aws_secret_key)
     region = 'us-east-1'
-    zone = 'us-east-1a'
+    zone = 'us-east-1c'
     key_name = 'cloudburstkey'
     ssh_http_sg_name = 'SSH/HTTP'
     http_sg_name = 'HTTP'
     phase = 'phase1'
 
-    frontend_image = 'ami-8b3363ee'
-    number_of_frontend_servers = 3
+    frontend_image = 'ami-c791c1a2'
+    number_of_frontend_servers = 1
     frontend_server_bid = 0.06
     frontend_server_name = 'FrontendServer'
     frontend_elb_name = 'FrontendELB'
@@ -224,7 +224,7 @@ def deploy(remove=False):
             request_spot_instance_thread.join()
 
         ssh_http_sg = manager.get_security_group(http_sg_name)
-        manager.create_elb(frontend_elb_name, zone, phase, ssh_http_sg.id, [frontend_server.id for frontend_server in frontend_servers])
+        manager.create_elb(frontend_elb_name, zone, phase, ssh_http_sg.id, [frontend_server.instances[0].id for frontend_server in frontend_servers])
         print 'ELB {} created'.format(frontend_elb_name)
 
 if __name__ == "__main__":

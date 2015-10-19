@@ -17,7 +17,6 @@ public class CloudBurstContext implements ServletContextListener {
     private final static Logger logger = LoggerFactory.getLogger(CloudBurstContext.class);
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        LoggingConfigurator.configureFor(LoggingConfigurator.Environment.PRODUCTION);
         Properties boneCPConfigProperties = new Properties();
         Properties configProperties = new Properties();
 
@@ -28,7 +27,6 @@ public class CloudBurstContext implements ServletContextListener {
             logger.error("Problem reading properties", ex);
         }
         Q1Servlet.setFirstLine(configProperties.getProperty("team.id"), configProperties.getProperty("team.aws.id"));
-        MySQLConnectionFactory.init(boneCPConfigProperties);
         TimeZone.setDefault(TimeZone.getTimeZone("Etc/GMT+4"));
         logger.info("Server started");
     }

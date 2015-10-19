@@ -42,7 +42,7 @@ public class CipherService {
     public String decrypt(String key, String message) {
         BigInteger xy = new BigInteger(key);
         BigInteger y = xy.divide(X);
-        int offset = (y.intValue() % 25) + 1;
+        int offset = (int) ((y.longValue() % 25) + 1);
         int n = (int) Math.sqrt(message.length());
         StringBuilder result = new StringBuilder();
         char[][] matrix = new char[n][n];
