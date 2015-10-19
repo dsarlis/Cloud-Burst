@@ -70,7 +70,7 @@ class MSBManager:
         return instance
 
     def request_spot_instance(self, bid, image, instance_type, key_name, zone, security_groups, tags):
-        req = self.ec2_conn.request_spot_instances(price=bid, instance_type=instance_type, image_id=image, availability_zone_group=zone,key_name=key_name, security_groups=security_groups)
+        req = self.ec2_conn.request_spot_instances(price=bid, instance_type=instance_type, image_id=image, placement=zone,key_name=key_name, security_groups=security_groups)
         instance_id = None
 
         while not instance_id:
@@ -203,7 +203,7 @@ def deploy(remove=False):
 
     frontend_image = 'ami-8b3363ee'
     number_of_frontend_servers = 3
-    frontend_server_bid = 0.05
+    frontend_server_bid = 0.06
     frontend_server_name = 'FrontendServer'
     frontend_elb_name = 'FrontendELB'
     frontend_servers = []
