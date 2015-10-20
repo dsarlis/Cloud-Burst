@@ -1,0 +1,24 @@
+upstream myapp1 {
+        server ec2-52-23-254-8.compute-1.amazonaws.com;
+        server ec2-52-91-193-36.compute-1.amazonaws.com;
+    }
+
+
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server ipv6only=on;
+
+        root /usr/share/nginx/html;
+        index index.html index.htm;
+
+        # Make site accessible from http://localhost/
+        server_name localhost;
+
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                proxy_pass http://myapp1;
+                # Uncomment to enable naxsi on this location
+                # include /etc/nginx/naxsi.rules
+        }
+
