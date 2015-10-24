@@ -32,7 +32,8 @@ public class TextSentimentGrader {
 	 * words as labeled by Finn Årup Nielsen in 2009-2011.
 	 */
 	private static void populateSentimentMap() throws IOException, FileNotFoundException {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(AFINN_FILE_LOC)));) {
+		//TODO: maybe use classpath.
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(AFINN_FILE_LOC)))) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				String[] chunks = line.split(TAB);

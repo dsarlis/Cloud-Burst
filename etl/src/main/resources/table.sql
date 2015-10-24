@@ -4,4 +4,4 @@ CREATE TABLE IF NOT EXISTS tweet (
     creationTime TIMESTAMP not null,
     text varchar(256) not null,
     score int not null default 0
-);
+) ENGINE = MyISAM;

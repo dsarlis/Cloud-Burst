@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 public class MySQLService {
 
 	private static final Logger logger = LoggerFactory.getLogger(MySQLService.class);
-	private static final String INSERT_QUERY = " insert into tweets (tweetId, usedId, creationTime, text, score) values (?, ?, ?, ?, ?)";
+	private static final String INSERT_QUERY = "insert into tweets (tweetId, usedId, creationTime, text, score) values (?, ?, ?, ?, ?)";
 
 	private MySQLConnectionFactory factory;
 
@@ -22,6 +22,7 @@ public class MySQLService {
 	}
 
 	public void insertTweet(Tweet tweet) throws ParseException {
+		logger.info("Inserting tweet={}", tweet);
 		try (Connection connection = factory.getConnection()) {
 			PreparedStatement preparedStmt = connection.prepareStatement(INSERT_QUERY);
 
@@ -30,9 +31,12 @@ public class MySQLService {
 			preparedStmt.setDate(3, new java.sql.Date(tweet.getCreationTime().getTime()));
 			preparedStmt.setString(4, tweet.getText());
 			preparedStmt.setInt(5, tweet.getScore());
+
+			preparedStmt.execute();
 		} catch (SQLException ex) {
 			logger.error("Problem inserting tweet", ex);
 		}
+		logger.info("Done inserting tweet={}", tweet);
 	}
 
 }

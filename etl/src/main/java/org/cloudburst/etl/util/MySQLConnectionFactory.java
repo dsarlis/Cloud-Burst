@@ -39,7 +39,7 @@ public class MySQLConnectionFactory {
         }
     }
 
-    public static Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
         return connectionPool.getConnection();
     }
 

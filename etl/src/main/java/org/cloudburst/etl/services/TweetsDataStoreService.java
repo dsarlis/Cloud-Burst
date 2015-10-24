@@ -9,6 +9,7 @@ public class TweetsDataStoreService {
 
     private static final String CMU_DATASETS_BUCKET = "cmucc-datasets";
     private static final String TWEETS_FOLDER = "twitter/f15/";
+    private static final String CLOUD_BURST_BUCKET_NAME = "filtering-output";
 
     private AWSManager awsManager;
 
@@ -23,6 +24,10 @@ public class TweetsDataStoreService {
 
     public InputStream getTweetFileInputStream(String fileName) {
         return awsManager.getObjectInputStream(CMU_DATASETS_BUCKET, fileName);
+    }
+
+    public void saveTweetsFile(String fileName) {
+        awsManager.storeInBucket(fileName, CLOUD_BURST_BUCKET_NAME, fileName);
     }
 
 }

@@ -83,6 +83,7 @@ public class Tweet {
 
 	private Date toUTCDate(String createdAt) throws ParseException {
 		SimpleDateFormat format = new SimpleDateFormat(DATE_TIME_FORMAT);
+
 		format.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_UTC_GMT));
 		return format.parse(createdAt);
 	}
@@ -90,6 +91,7 @@ public class Tweet {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
+
 		builder.append("Tweet [tweetId=");
 		builder.append(tweetId);
 		builder.append(", userId=");

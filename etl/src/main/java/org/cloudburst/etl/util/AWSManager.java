@@ -1,21 +1,21 @@
 package org.cloudburst.etl.util;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.amazonaws.services.s3.model.*;
 import org.cloudburst.etl.model.Tweet;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AWSManager {
 
+	private static final Logger logger = LoggerFactory.getLogger(AWSManager.class);
 	private AmazonS3Client s3Client;
 
 	public AWSManager() {
@@ -27,7 +27,9 @@ public class AWSManager {
 	}
 
 	public List<String> listFiles(String bucketName, String prefix) {
+		logger.info("Listing files with bucketName={} and prefix={}", bucketName, prefix);
 		ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName);
+
 		if (prefix != null) {
 			listObjectsRequest = listObjectsRequest.withPrefix(prefix);
 		}
@@ -43,18 +45,24 @@ public class AWSManager {
 			listObjectsRequest.setMarker(objectListing.getNextMarker());
 		} while (objectListing.isTruncated());
 
+		logger.info("Done listing files with bucketName={} and prefix={}", bucketName, prefix);
 		return files;
 	}
 
 	public InputStream getObjectInputStream(String bucketName, String key) {
+		logger.info("Getting object input stream bucketName={} and key={}", bucketName, key);
 		S3Object s3object = s3Client.getObject(new GetObjectRequest(bucketName, key));
 
+		logger.info("Done getting object input stream bucketName={} and key={}", bucketName, key);
 		return s3object.getObjectContent();
 	}
 
-	public static void storeInBucket(Tweet tweet) {
-		// TODO Auto-generated method stub
+	public void storeInBucket(String finalName, String bucketName, String key) {
+		logger.info("Storing fileName={} in bucketName={} and key={}", finalName, bucketName, key);
+		File file = new File(finalName);
 
+		s3Client.putObject(new PutObjectRequest(bucketName, key, file));
+		logger.info("Dne storing fileName={} in bucketName={} and key={}", finalName, bucketName, key);
 	}
 
 }
