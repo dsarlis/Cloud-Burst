@@ -1,9 +1,9 @@
 package org.cloudburst.etl.services;
 
-import org.cloudburst.etl.util.AWSManager;
-
 import java.io.InputStream;
 import java.util.List;
+
+import org.cloudburst.etl.util.AWSManager;
 
 public class TweetsDataStoreService {
 
@@ -12,7 +12,7 @@ public class TweetsDataStoreService {
 
     private AWSManager awsManager;
 
-    public TweetsDataStoreService(AWSManager awsManager) {
+	public TweetsDataStoreService(AWSManager awsManager) {
         this.awsManager = awsManager;
     }
 

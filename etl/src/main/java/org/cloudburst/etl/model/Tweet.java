@@ -1,61 +1,107 @@
 package org.cloudburst.etl.model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
+import com.google.gson.annotations.SerializedName;
+
+/**
+ * GSON Mapping for Tweet.
+ */
 public class Tweet {
 
-    private long tweetId;
-    private long usedId;
-    private Date creationTime;
-    private String text;
-    private int score;
+	private static final String DATE_TIME_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
+	private static final String TIME_ZONE_UTC_GMT = "GMT";
 
-    public Tweet(long tweetId, long usedId, Date creationTime, String text, int score) {
-        this.tweetId = tweetId;
-        this.usedId = usedId;
-        this.creationTime = creationTime;
-        this.text = text;
-        this.score = score;
-    }
+	@SerializedName("id")
+	private long tweetId;
 
-    public long getTweetId() {
-        return tweetId;
-    }
+	@SerializedName("user")
+	private User user;
 
-    public void setTweetId(long tweetId) {
-        this.tweetId = tweetId;
-    }
+	@SerializedName("created_at")
+	private String createdAt;
 
-    public long getUsedId() {
-        return usedId;
-    }
+	@SerializedName("text")
+	private String text;
 
-    public void setUsedId(long usedId) {
-        this.usedId = usedId;
-    }
+	/* Not part of raw JSON */
+	private int score;
 
-    public Date getCreationTime() {
-        return creationTime;
-    }
+	public Tweet(long tweetId, long usedId, String createdAt, String text) throws ParseException {
+		setTweetId(tweetId);
+		setUserId(usedId);
+		setCreationTime(createdAt);
+		setText(text);
+	}
 
-    public void setCreationTime(Date creationTime) {
-        this.creationTime = creationTime;
-    }
+	public long getTweetId() {
+		return tweetId;
+	}
 
-    public String getText() {
-        return text;
-    }
+	public void setTweetId(long tweetId) {
+		this.tweetId = tweetId;
+	}
 
-    public void setText(String text) {
-        this.text = text;
-    }
+	public long getUserId() {
+		return user.getUserId();
+	}
 
-    public int getScore() {
-        return score;
-    }
+	public void setUserId(long usedId) {
+		this.user.setUserId(usedId);
+	}
 
-    public void setScore(int score) {
-        this.score = score;
-    }
+	public Date getCreationTime() throws ParseException {
+		return toUTCDate(createdAt);
+	}
+
+	public void setCreationTime(String createdAt) throws ParseException {
+		this.createdAt = createdAt;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
+
+	public void adjustScore(int sentimentScore) {
+		this.score += sentimentScore;
+	}
+
+	private Date toUTCDate(String createdAt) throws ParseException {
+		SimpleDateFormat format = new SimpleDateFormat(DATE_TIME_FORMAT);
+		format.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_UTC_GMT));
+		return format.parse(createdAt);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Tweet [tweetId=");
+		builder.append(tweetId);
+		builder.append(", userId=");
+		builder.append(user.getUserId());
+		builder.append(", createdAt=");
+		builder.append(createdAt);
+		builder.append(", text=");
+		builder.append(text);
+		builder.append(", score=");
+		builder.append(score);
+		builder.append("]");
+		return builder.toString();
+	}
 
 }
