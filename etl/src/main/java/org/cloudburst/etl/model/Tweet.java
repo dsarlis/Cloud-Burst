@@ -91,7 +91,7 @@ public class Tweet {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Tweet [tweetId=");
+		/*builder.append("Tweet [tweetId=");
 		builder.append(tweetId);
 		builder.append(", userId=");
 		builder.append(user.getUserId());
@@ -101,7 +101,16 @@ public class Tweet {
 		builder.append(text);
 		builder.append(", score=");
 		builder.append(score);
-		builder.append("]");
+		builder.append("]");*/
+		builder.append(tweetId);
+		builder.append("\t");
+		builder.append(user.getUserId());
+		builder.append("\t");
+		builder.append(createdAt);
+		builder.append("\t");
+		builder.append(score);
+		builder.append("\t");
+		builder.append(text);
 		return builder.toString();
 	}
 
