@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -49,7 +51,7 @@ public class TextSentimentGrader {
 
 		String[] chunks = tweet.getText().split(REGEX_NON_ALPHA_NUM);
 		for (String textChunk : chunks) {
-			System.out.println(textChunk);
+//			System.out.println(textChunk);
 			if (!textChunk.isEmpty()) {
 				for (String key : afinnPool.keySet()) {
 					if (textChunk.toLowerCase().equals(key)) {

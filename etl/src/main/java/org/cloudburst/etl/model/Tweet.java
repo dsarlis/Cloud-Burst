@@ -30,9 +30,9 @@ public class Tweet {
 	/* Not part of raw JSON */
 	private int score;
 
-	public Tweet(long tweetId, long usedId, String createdAt, String text) throws ParseException {
+	public Tweet(long tweetId, long userId, String createdAt, String text) throws ParseException {
 		setTweetId(tweetId);
-		setUserId(usedId);
+		setUserId(userId);
 		setCreationTime(createdAt);
 		setText(text);
 	}
@@ -49,8 +49,9 @@ public class Tweet {
 		return user.getUserId();
 	}
 
-	public void setUserId(long usedId) {
-		this.user.setUserId(usedId);
+	public void setUserId(long userId) {
+		this.user = new User();
+		this.user.setUserId(userId);
 	}
 
 	public Date getCreationTime() throws ParseException {
@@ -92,7 +93,7 @@ public class Tweet {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 
-		builder.append("Tweet [tweetId=");
+		/*builder.append("Tweet [tweetId=");
 		builder.append(tweetId);
 		builder.append(", userId=");
 		builder.append(user.getUserId());
@@ -102,7 +103,16 @@ public class Tweet {
 		builder.append(text);
 		builder.append(", score=");
 		builder.append(score);
-		builder.append("]");
+		builder.append("]");*/
+		builder.append(tweetId);
+		builder.append("\t");
+		builder.append(user.getUserId());
+		builder.append("\t");
+		builder.append(createdAt);
+		builder.append("\t");
+		builder.append(score);
+		builder.append("\t");
+		builder.append(text);
 		return builder.toString();
 	}
 

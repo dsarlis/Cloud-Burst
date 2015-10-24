@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public class Main {
 
 	private final static Logger logger = LoggerFactory.getLogger(Main.class);
-	private final static int THREAD_NUMBER = 16;
+	private final static int THREAD_NUMBER = Runtime.getRuntime().availableProcessors();
 
 	public static void main(String[] args) throws InterruptedException {
 		TweetsDataStoreService tweetsDataStoreService = new TweetsDataStoreService(new AWSManager());
