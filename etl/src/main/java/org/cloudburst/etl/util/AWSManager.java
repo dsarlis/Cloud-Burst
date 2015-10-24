@@ -48,13 +48,11 @@ public class AWSManager {
 
 	public InputStream getObjectInputStream(String bucketName, String key) {
 		S3Object s3object = s3Client.getObject(new GetObjectRequest(bucketName, key));
-
 		return s3object.getObjectContent();
 	}
 
 	public static void storeInBucket(Tweet tweet) {
 		// TODO Auto-generated method stub
-
 	}
 
 }

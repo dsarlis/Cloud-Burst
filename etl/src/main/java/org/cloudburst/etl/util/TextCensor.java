@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.ParseException;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,7 +36,7 @@ public class TextCensor {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(BANNED_LIST_LOC)));) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
-				bannedSetOfWords.add(getROT13DecryptedWord(line.trim()));
+				bannedSetOfWords.add(getROT13DecryptedWord(line.trim()).toLowerCase());
 			}
 		}
 	}
@@ -58,11 +60,19 @@ public class TextCensor {
 	 */
 	public static String censorBannedWords(Tweet tweet) {
 		String[] chunks = tweet.getText().split("[^A-Za-z0-9]");
-		for (String chunk : chunks) {
-			if (!chunk.isEmpty() && bannedSetOfWords.contains(chunk)) {
-				/* TODO : Make words with asterisk. */
+		for (int index = 0; index < chunks.length; index++) {
+			StringBuilder censoredChunk = new StringBuilder();
+			if (!chunks[index].isEmpty() && bannedSetOfWords.contains(chunks[index].toLowerCase())) {
+				for (int i = 0; i < chunks[index].length(); i++) {
+					if (i == 0 || i == chunks[index].length() - 1) {
+						censoredChunk.append(chunks[index].charAt(i));
+					} else {
+						censoredChunk.append('*');
+					}
+				}
 			}
+			chunks[index] = censoredChunk.toString();
 		}
-		return ""; /* TODO: Return updated tweet text. */
+		return ""; /* TODO: Return updated tweet text. Chunks table has the censored words. Needs to be reassembled */
 	}
 }

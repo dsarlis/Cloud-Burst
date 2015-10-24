@@ -30,9 +30,9 @@ public class Tweet {
 	/* Not part of raw JSON */
 	private int score;
 
-	public Tweet(long tweetId, long usedId, String createdAt, String text) throws ParseException {
+	public Tweet(long tweetId, long userId, String createdAt, String text) throws ParseException {
 		setTweetId(tweetId);
-		setUserId(usedId);
+		setUserId(userId);
 		setCreationTime(createdAt);
 		setText(text);
 	}
@@ -49,8 +49,9 @@ public class Tweet {
 		return user.getUserId();
 	}
 
-	public void setUserId(long usedId) {
-		this.user.setUserId(usedId);
+	public void setUserId(long userId) {
+		this.user = new User();
+		this.user.setUserId(userId);
 	}
 
 	public Date getCreationTime() throws ParseException {
