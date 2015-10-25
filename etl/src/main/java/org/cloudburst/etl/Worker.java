@@ -29,8 +29,8 @@ public class Worker extends Thread {
 	private TweetsDataStoreService tweetsDataStoreService;
 	private MySQLService mySQLService;
 
-	static Gson gson = new Gson();
-	static Set<Long> uniqueTweetIds = Collections.newSetFromMap(new ConcurrentHashMap<Long, Boolean>());
+	private static Gson gson = new Gson();
+	private static Set<Long> uniqueTweetIds = Collections.newSetFromMap(new ConcurrentHashMap<Long, Boolean>());
 
 	public Worker(Queue<String> fileNamesQueue, TweetsDataStoreService tweetsDataStoreService, MySQLService mySQLService) {
 		this.fileNamesQueue = fileNamesQueue;
@@ -70,26 +70,46 @@ public class Worker extends Thread {
 				/*
 				I left you logic so you can finish testing, but it should be something like this.
 
+		while (fileNamesQueue.size() > 0) {
+			String fileName = fileNamesQueue.poll();
+			String outputFileName = getOutputFileName(fileName);
+
+			if (fileName != null) {
+				logger.info("Reading file {}", fileName);
 				try(BufferedReader reader = new BufferedReader(new InputStreamReader(tweetsDataStoreService.getTweetFileInputStream(fileName)))) {
 					String line = null;
 
-					try (FileOutputStream fileOutputStream = new FileOutputStream(fileName)) {
+					try (FileOutputStream fileOutputStream = new FileOutputStream(outputFileName)) {
 						while ((line = reader.readLine()) != null) {
-							filterAndInsertTweet(line);
+							filterAndInsertTweet(fileOutputStream, line);
 						}
-
 					} catch (IOException | ParseException ex) {
 						logger.error("Problem reading object or file", ex);
 					}
 
-					tweetsDataStoreService.saveTweetsFile(fileName);
-
+					tweetsDataStoreService.saveTweetsFile(outputFileName);
+					deleteFile(outputFileName);
+					logger.info("Done with file {}", fileName);
 				} catch (IOException ex) {
 					logger.error("Problem reading file", ex);
 				}
+			}
+		}
 				 */
 			}
 		}
+	}
+
+	private void deleteFile(String outputFileName) {
+		File outputFile = new File(outputFileName);
+
+		outputFile.delete();
+	}
+
+	private String getOutputFileName(String fileName) {
+		String[] tokens = fileName.split("/");
+
+		return tokens.length > 0 ? tokens[tokens.length - 1] : fileName;
 	}
 
 	private void filterAndInsertTweet(FileOutputStream fileOutputStream, String line) throws ParseException, IOException {

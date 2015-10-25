@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 public class MySQLService {
 
 	private static final Logger logger = LoggerFactory.getLogger(MySQLService.class);
-	private static final String INSERT_QUERY = "insert into tweets (tweetId, usedId, creationTime, text, score) values (?, ?, ?, ?, ?)";
+	private static final String INSERT_QUERY = "insert into tweet (tweetId, usedId, creationTime, text, score) values (?, ?, ?, ?, ?)";
 
 	private MySQLConnectionFactory factory;
 

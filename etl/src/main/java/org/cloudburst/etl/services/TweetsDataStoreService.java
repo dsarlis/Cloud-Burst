@@ -9,7 +9,7 @@ public class TweetsDataStoreService {
 
     private static final String CMU_DATASETS_BUCKET = "cmucc-datasets";
     private static final String TWEETS_FOLDER = "twitter/f15/";
-    private static final String CLOUD_BURST_BUCKET_NAME = "filtering-output";
+    private static final String REDCUDED_TWEETS_BUCKET_NAME = "reducedtweets";
 
     private AWSManager awsManager;
 
@@ -19,7 +19,10 @@ public class TweetsDataStoreService {
 
 
     public List<String> getTweetFileNames() {
-        return awsManager.listFiles(CMU_DATASETS_BUCKET, TWEETS_FOLDER);
+        List<String> fileNames = awsManager.listFiles(CMU_DATASETS_BUCKET, TWEETS_FOLDER);
+
+        fileNames.remove("twitter/f15/_SUCCESS");
+        return fileNames;
     }
 
     public InputStream getTweetFileInputStream(String fileName) {
@@ -27,7 +30,7 @@ public class TweetsDataStoreService {
     }
 
     public void saveTweetsFile(String fileName) {
-        awsManager.storeInBucket(fileName, CLOUD_BURST_BUCKET_NAME, fileName);
+        awsManager.storeInBucket(fileName, REDCUDED_TWEETS_BUCKET_NAME, fileName);
     }
 
 }
