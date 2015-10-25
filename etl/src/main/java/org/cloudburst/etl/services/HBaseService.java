@@ -17,7 +17,10 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 
 public class HBaseService {
@@ -29,26 +32,36 @@ public class HBaseService {
             String[] fields = line.split("\t");
 
             String outputKey = fields[1]+ "_" + fields[2];
-            String outputValue = fields[0] + "_" + fields[3] + "_" + fields[4];
+            String outputValue = fields[0] + ":" + fields[3] + ":" + fields[4];
             context.write(new Text(outputKey), new Text(outputValue));
             value.clear();
         }
     }
 
     public static class Reduce extends Reducer<Text, Text, ImmutableBytesWritable, KeyValue> {
-        private ImmutableBytesWritable hkey = new ImmutableBytesWritable();
+        private ImmutableBytesWritable hkey;
 
         public void reduce(Text key, Iterable<Text> values, Context context)
                 throws IOException, InterruptedException {
-            String outputValue = null;
-            // TODO: get the list of keyValues for each key, sort them by tweet id and
-            // TODO: create a final outputValue that separates different entries with \n
-
+            hkey = new ImmutableBytesWritable();
+            StringBuilder outputValue = new StringBuilder();
+            HashMap<String, String> tweetMap = new HashMap<>();
+            for (Text value: values) {
+                String[] fields = value.toString().split(":");
+                tweetMap.put(fields[0], value.toString());
+            }
+            // sort by tweet ID and then append to output with "\n"
+            Object[] keys = tweetMap.keySet().toArray();
+            Arrays.sort(keys);
+            for (Object k: keys) {
+                outputValue.append(tweetMap.get(k));
+                outputValue.append("\n");
+            }
+            // write key value pairs to HFile
             hkey.set(key.getBytes());
             KeyValue kv = new KeyValue(hkey.get(), Bytes.toBytes("tweetInfo"), Bytes.toBytes("data"),
-                    Bytes.toBytes(outputValue));
+                    Bytes.toBytes(outputValue.toString()));
             context.write(hkey, kv);
-            hkey = new ImmutableBytesWritable();
         }
     }
 
