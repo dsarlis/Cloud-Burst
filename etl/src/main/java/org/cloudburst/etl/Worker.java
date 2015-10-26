@@ -121,7 +121,7 @@ public class Worker extends Thread {
 	private boolean isTweetOld(Tweet tweet) throws ParseException {
 		DateTime dateTime = new DateTime(2014, 4, 20, 0, 0, 0, 0, DateTimeZone.UTC);
 
-		return !dateTime.toDate().before(tweet.getCreationTime());
+		return tweet.getCreationTime().before(dateTime.toDate());
 	}
 
 	/**
