@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import org.cloudburst.etl.model.Tweet;
 
@@ -13,7 +14,7 @@ public class TextSentimentGrader {
 
 	private static final String AFINN_FILE_NAME = "/afinn.txt";
 
-	private static final String REGEX_NON_ALPHA_NUM = "[^A-Za-z0-9]";
+	private static final Pattern REGEX_NON_ALPHA_NUM = Pattern.compile("[^A-Za-z0-9]");
 	private static final String TAB = "\t";
 
 	/* Keeping a MAP at class level. (Size of keySet = 2475) */
@@ -45,15 +46,16 @@ public class TextSentimentGrader {
 	 */
 	public static void addSentimentScore(Tweet tweet) throws IOException {
 
-		String[] chunks = tweet.getText().split(REGEX_NON_ALPHA_NUM);
+		String[] chunks = REGEX_NON_ALPHA_NUM.split(tweet.getText());
 		for (String textChunk : chunks) {
 			if (!textChunk.isEmpty()) {
-				for (String key : afinnPool.keySet()) {
-					if (textChunk.toLowerCase().equals(key)) {
-						tweet.adjustScore(afinnPool.get(key));
-					}
+				String key = textChunk.toLowerCase();
+
+				if (afinnPool.containsKey(key)) {
+					tweet.adjustScore(afinnPool.get(key));
 				}
 			}
 		}
 	}
+
 }
