@@ -93,14 +93,11 @@ public class Worker extends Thread {
 			Tweet tweet = generateTweet(jsonElement);
 
 			/* Checks redundant Tweets */
-			if (!uniqueTweetIds.contains(tweet.getTweetId()) && !isTweetOld(tweet)) {
+			if (tweet != null && !uniqueTweetIds.contains(tweet.getTweetId()) && !isTweetOld(tweet)) {
 				uniqueTweetIds.add(tweet.getTweetId());
 				TextSentimentGrader.addSentimentScore(tweet);
-
 				fileOutputStream.write(tweet.toString().getBytes());
-
 				TextCensor.censorBannedWords(tweet);
-
 				tweets.add(tweet);
 			}
 		} catch (JsonSyntaxException ex) {
@@ -108,10 +105,14 @@ public class Worker extends Thread {
 		}
 	}
 
-	private Tweet generateTweet(JsonElement jsonElement) throws ParseException {
+	private Tweet generateTweet(JsonElement jsonElement)  {
 		JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-		return new Tweet(Long.parseLong(jsonObject.get("id").getAsString()), Long.parseLong(jsonObject.getAsJsonObject("user").get("id").getAsString()), jsonObject.get("created_at").getAsString(), jsonObject.get("text").getAsString());
+		try {
+			return new Tweet(jsonObject.get("id").getAsLong(), jsonObject.getAsJsonObject("user").get("id").getAsLong(), jsonObject.get("created_at").getAsString(), jsonObject.get("text").getAsString());
+		} catch (Throwable ex) {
+			return null;
+		}
 	}
 
 	/**
