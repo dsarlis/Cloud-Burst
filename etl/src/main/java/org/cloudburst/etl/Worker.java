@@ -2,9 +2,7 @@ package org.cloudburst.etl;
 
 import java.io.*;
 import java.text.ParseException;
-import java.util.Collections;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.cloudburst.etl.model.Tweet;
@@ -24,11 +22,13 @@ import com.google.gson.JsonSyntaxException;
 
 public class Worker extends Thread {
 
-	private final static Logger logger = LoggerFactory.getLogger(Worker.class);
+	private static final Logger logger = LoggerFactory.getLogger(Worker.class);
+	private static final int BATCH_SIZE = 100;
 
 	private Queue<String> fileNamesQueue;
 	private TweetsDataStoreService tweetsDataStoreService;
 	private MySQLService mySQLService;
+	private List<Tweet> tweets;
 
 	private static Gson gson = new Gson();
 	private static Set<Long> uniqueTweetIds = Collections.newSetFromMap(new ConcurrentHashMap<Long, Boolean>());
@@ -49,16 +49,24 @@ public class Worker extends Thread {
 				logger.info("Reading file {}", fileName);
 				try(BufferedReader reader = new BufferedReader(new InputStreamReader(tweetsDataStoreService.getTweetFileInputStream(fileName)))) {
 					String line = null;
+					int count = 1;
+					tweets = new ArrayList<Tweet>();
 
 					try (FileOutputStream fileOutputStream = new FileOutputStream(outputFileName)) {
 						while ((line = reader.readLine()) != null) {
 							filterAndInsertTweet(fileOutputStream, line);
+							if (count == BATCH_SIZE) {
+								mySQLService.insertTweets(tweets);
+								tweets = new ArrayList<Tweet>();
+								count = 1;
+							}
+							count++;
 						}
+						mySQLService.insertTweets(tweets);
 					} catch (IOException | ParseException ex) {
 						logger.error("Problem reading object or file", ex);
 					}
 
-					mySQLService.flush();
 					tweetsDataStoreService.saveTweetsFile(outputFileName);
 					deleteFile(outputFileName);
 					logger.info("Done with file {}", fileName);
@@ -97,7 +105,7 @@ public class Worker extends Thread {
 
 				TextCensor.censorBannedWords(tweet);
 
-				mySQLService.insertTweet(tweet);
+				tweets.add(tweet);
 			}
 		} catch (JsonSyntaxException ex) {
 			/* Eat up the exception to speed up. */
