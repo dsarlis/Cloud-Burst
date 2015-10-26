@@ -72,7 +72,7 @@ public class TextCensor {
 	/**
 	 * Censor checks on the tweet. Example : CENSOR becomes C****R.
 	 */
-	public static String censorBannedWords(Tweet tweet) {
+	public static void censorBannedWords(Tweet tweet) {
 		String content = tweet.getText();
 		StringBuilder word = new StringBuilder();
 		StringBuilder censoredContent = new StringBuilder();
@@ -90,6 +90,6 @@ public class TextCensor {
 				censoredContent.append(content.charAt(i));
 			}
  		}
-		return censoredContent.toString();
+		tweet.setText(censoredContent.toString());
 	}
 }

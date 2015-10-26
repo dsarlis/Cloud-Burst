@@ -25,7 +25,7 @@ public class TextSentimentGrader {
 	/**
 	 * Populates in-memory needs for text processing.
 	 */
-	public static void init() throws FileNotFoundException, IOException {
+	public static void init() throws IOException {
 		populateSentimentMap();
 	}
 
@@ -33,8 +33,7 @@ public class TextSentimentGrader {
 	 * SENTIMENT-SCORING : Reads the file that contains sentiment scores for
 	 * words as labeled by Finn Årup Nielsen in 2009-2011.
 	 */
-	private static void populateSentimentMap() throws IOException, FileNotFoundException {
-		//TODO: maybe use classpath.
+	private static void populateSentimentMap() throws IOException {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(AFINN_FILE_LOC)))) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
@@ -47,11 +46,10 @@ public class TextSentimentGrader {
 	/**
 	 * Calculates the total sentiment score for a tweet.
 	 */
-	public static void addSentimentScore(Tweet tweet) throws FileNotFoundException, IOException {
+	public static void addSentimentScore(Tweet tweet) throws IOException {
 
 		String[] chunks = tweet.getText().split(REGEX_NON_ALPHA_NUM);
 		for (String textChunk : chunks) {
-//			System.out.println(textChunk);
 			if (!textChunk.isEmpty()) {
 				for (String key : afinnPool.keySet()) {
 					if (textChunk.toLowerCase().equals(key)) {
