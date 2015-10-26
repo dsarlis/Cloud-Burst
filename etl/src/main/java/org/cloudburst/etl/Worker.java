@@ -49,10 +49,9 @@ public class Worker extends Thread {
 				logger.info("Reading file {}", fileName);
 				try(BufferedReader reader = new BufferedReader(new InputStreamReader(tweetsDataStoreService.getTweetFileInputStream(fileName)))) {
 					String line = null;
-					int count = 0;
 
 					try (FileOutputStream fileOutputStream = new FileOutputStream(outputFileName)) {
-						while ((line = reader.readLine()) != null && count++ < 150) {
+						while ((line = reader.readLine()) != null) {
 							filterAndInsertTweet(fileOutputStream, line);
 						}
 					} catch (IOException | ParseException ex) {
