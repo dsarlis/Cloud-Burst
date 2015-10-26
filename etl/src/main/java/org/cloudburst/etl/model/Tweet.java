@@ -102,7 +102,7 @@ public class Tweet {
 		builder.append(separator);
 		builder.append(score);
 		builder.append(separator);
-		builder.append(text);
+		builder.append(text.replace("\n", "\\n").replace("\r", "\\r"));
 		builder.append("\n");
 		return builder.toString();
 	}
