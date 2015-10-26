@@ -3,6 +3,7 @@ package org.cloudburst.etl.services;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class MySQLService {
 			for (Tweet tweet : tweets) {
 				preparedStatement.setLong(counter++, tweet.getTweetId());
 				preparedStatement.setLong(counter++, tweet.getUserId());
-				preparedStatement.setDate(counter++, new java.sql.Date(tweet.getCreationTime().getTime()));
+				preparedStatement.setTimestamp(counter++, new Timestamp(tweet.getCreationTime().getTime()));
 				preparedStatement.setString(counter++, tweet.getText());
 				preparedStatement.setInt(counter++, tweet.getScore());
 			}
