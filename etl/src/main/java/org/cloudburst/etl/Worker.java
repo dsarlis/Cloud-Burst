@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.gson.*;
 import org.cloudburst.etl.model.Tweet;
 import org.cloudburst.etl.services.MySQLService;
 import org.cloudburst.etl.services.TweetsDataStoreService;
@@ -15,15 +16,10 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-
 public class Worker extends Thread {
 
 	private static final Logger logger = LoggerFactory.getLogger(Worker.class);
-	private static final int BATCH_SIZE = 100;
+	private static final int BATCH_SIZE = 1000;
 
 	private Queue<String> fileNamesQueue;
 	private TweetsDataStoreService tweetsDataStoreService;
@@ -94,7 +90,7 @@ public class Worker extends Thread {
 		try {
 			/* Checks Malformed Tweets */
 			JsonElement jsonElement = throwExceptionForMalformedTweets(line);
-			Tweet tweet = gson.fromJson(jsonElement.getAsJsonObject().toString(), Tweet.class);
+			Tweet tweet = generateTweet(jsonElement);
 
 			/* Checks redundant Tweets */
 			if (!uniqueTweetIds.contains(tweet.getTweetId()) && !isTweetOld(tweet)) {
@@ -110,6 +106,12 @@ public class Worker extends Thread {
 		} catch (JsonSyntaxException ex) {
 			/* Eat up the exception to speed up. */
 		}
+	}
+
+	private Tweet generateTweet(JsonElement jsonElement) throws ParseException {
+		JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+		return new Tweet(Long.parseLong(jsonObject.get("id").getAsString()), Long.parseLong(jsonObject.getAsJsonObject("user").get("id").getAsString()), jsonObject.get("created_at").getAsString(), jsonObject.get("text").getAsString());
 	}
 
 	/**

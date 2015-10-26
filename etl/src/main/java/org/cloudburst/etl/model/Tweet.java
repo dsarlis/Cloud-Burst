@@ -5,8 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * GSON Mapping for Tweet.
  */
@@ -15,17 +13,15 @@ public class Tweet {
 	private static final String DATE_TIME_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
 	private static final String TIME_ZONE_UTC_GMT = "GMT";
 
-	@SerializedName("id")
 	private long tweetId;
 
-	@SerializedName("user")
 	private User user;
 
-	@SerializedName("created_at")
 	private String createdAt;
 
-	@SerializedName("text")
 	private String text;
+
+	private Date createdAtDate = null;
 
 	/* Not part of raw JSON */
 	private int score;
@@ -55,7 +51,10 @@ public class Tweet {
 	}
 
 	public Date getCreationTime() throws ParseException {
-		return toUTCDate(createdAt);
+		if (createdAtDate == null) {
+			createdAtDate = toUTCDate(createdAt);
+		}
+		return createdAtDate;
 	}
 
 	public void setCreationTime(String createdAt) throws ParseException {
