@@ -96,8 +96,8 @@ public class Worker extends Thread {
 			if (tweet != null && !uniqueTweetIds.contains(tweet.getTweetId()) && !isTweetOld(tweet)) {
 				uniqueTweetIds.add(tweet.getTweetId());
 				TextSentimentGrader.addSentimentScore(tweet);
-				fileOutputStream.write(tweet.toString().getBytes());
 				TextCensor.censorBannedWords(tweet);
+				fileOutputStream.write(tweet.toString().getBytes());
 				tweets.add(tweet);
 			}
 		} catch (JsonSyntaxException ex) {
