@@ -1,6 +1,7 @@
 package org.cloudburst.etl;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 import java.util.Queue;
@@ -20,7 +21,7 @@ public class Main {
 	private final static Logger logger = LoggerFactory.getLogger(Main.class);
 	private final static int THREAD_NUMBER = Runtime.getRuntime().availableProcessors();
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws InterruptedException, SQLException {
 		TweetsDataStoreService tweetsDataStoreService = new TweetsDataStoreService(new AWSManager());
 		List<String> tweetFileNames = tweetsDataStoreService.getTweetFileNames();
 		Queue<String> fileNamesQueue = new ConcurrentLinkedQueue<>(tweetFileNames);
@@ -41,9 +42,9 @@ public class Main {
 		}
 
 		Worker[] workers = new Worker[THREAD_NUMBER];
-		MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
 
 		for (int i = 0; i < THREAD_NUMBER; i++) {
+			MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
 			workers[i] = new Worker(fileNamesQueue, tweetsDataStoreService, mySQLService);
 		}
 

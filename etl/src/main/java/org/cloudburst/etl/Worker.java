@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.cloudburst.etl.model.Tweet;
 import org.cloudburst.etl.services.MySQLService;
 import org.cloudburst.etl.services.TweetsDataStoreService;
+import org.cloudburst.etl.util.TextCensor;
 import org.cloudburst.etl.util.TextSentimentGrader;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -42,51 +43,23 @@ public class Worker extends Thread {
 	public void run() {
 		while (fileNamesQueue.size() > 0) {
 			String fileName = fileNamesQueue.poll();
-
-			if (fileName != null) {
-				logger.info("Reading file {}", fileName);
-				InputStream inputStream = null;
-
-				try {
-					inputStream = new FileInputStream("/Users/walia-mac/Downloads/inputSet/chunkai");
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
-
-				BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-				String line = null;
-
-				try (FileOutputStream fileOutputStream = new FileOutputStream(fileName)) {
-					while ((line = reader.readLine()) != null) {
-						filterAndInsertTweet(fileOutputStream, line);
-					}
-				} catch (IOException | ParseException ex) {
-					logger.error("Problem reading object or file", ex);
-				}
-
-				//TODO:Test and check bucket name, correct file name, correct upload, etc.
-				tweetsDataStoreService.saveTweetsFile(fileName);
-				logger.info("Done with file {}", fileName);
-				/*
-				I left you logic so you can finish testing, but it should be something like this.
-
-		while (fileNamesQueue.size() > 0) {
-			String fileName = fileNamesQueue.poll();
 			String outputFileName = getOutputFileName(fileName);
 
 			if (fileName != null) {
 				logger.info("Reading file {}", fileName);
 				try(BufferedReader reader = new BufferedReader(new InputStreamReader(tweetsDataStoreService.getTweetFileInputStream(fileName)))) {
 					String line = null;
+					int count = 0;
 
 					try (FileOutputStream fileOutputStream = new FileOutputStream(outputFileName)) {
-						while ((line = reader.readLine()) != null) {
+						while ((line = reader.readLine()) != null && count++ < 150) {
 							filterAndInsertTweet(fileOutputStream, line);
 						}
 					} catch (IOException | ParseException ex) {
 						logger.error("Problem reading object or file", ex);
 					}
 
+					mySQLService.flush();
 					tweetsDataStoreService.saveTweetsFile(outputFileName);
 					deleteFile(outputFileName);
 					logger.info("Done with file {}", fileName);
@@ -95,9 +68,7 @@ public class Worker extends Thread {
 				}
 			}
 		}
-				 */
-			}
-		}
+		mySQLService.close();
 	}
 
 	private void deleteFile(String outputFileName) {
@@ -121,24 +92,12 @@ public class Worker extends Thread {
 			/* Checks redundant Tweets */
 			if (!uniqueTweetIds.contains(tweet.getTweetId()) && !isTweetOld(tweet)) {
 				uniqueTweetIds.add(tweet.getTweetId());
-				//TODO: Suggestion: avoid using static methods. I think there is no need for it here.
 				TextSentimentGrader.addSentimentScore(tweet);
 
 				fileOutputStream.write(tweet.toString().getBytes());
 
-				/* TODO:Text-censoring almost done (Just left with Asterisks) */
-				// TextCensor.censorBannedWords(tweet);
+				TextCensor.censorBannedWords(tweet);
 
-				/* TODO: Let us handle these in batch
-				*
-				* The performance difference is not that much:
-				* http://stackoverflow.com/questions/11389449/performance-of-mysql-insert-statements-in-java-batch-mode-prepared-statements-v
-				*
-				* We are using connection pool, it should be fast.
-				*
-				* Prefer to keep it simple to avoid errors.
-				*
-				* */
 				mySQLService.insertTweet(tweet);
 			}
 		} catch (JsonSyntaxException ex) {
@@ -161,4 +120,5 @@ public class Worker extends Thread {
 	private JsonElement throwExceptionForMalformedTweets(String line) throws JsonSyntaxException {
 		return new JsonParser().parse(line);
 	}
+
 }

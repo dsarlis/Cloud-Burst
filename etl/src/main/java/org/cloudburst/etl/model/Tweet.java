@@ -92,27 +92,18 @@ public class Tweet {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
+		String separator = "\t";
 
-		/*builder.append("Tweet [tweetId=");
 		builder.append(tweetId);
-		builder.append(", userId=");
+		builder.append(separator);
 		builder.append(user.getUserId());
-		builder.append(", createdAt=");
+		builder.append(separator);
 		builder.append(createdAt);
-		builder.append(", text=");
-		builder.append(text);
-		builder.append(", score=");
+		builder.append(separator);
 		builder.append(score);
-		builder.append("]");*/
-		builder.append(tweetId);
-		builder.append("\t");
-		builder.append(user.getUserId());
-		builder.append("\t");
-		builder.append(createdAt);
-		builder.append("\t");
-		builder.append(score);
-		builder.append("\t");
+		builder.append(separator);
 		builder.append(text);
+		builder.append("\n");
 		return builder.toString();
 	}
 
