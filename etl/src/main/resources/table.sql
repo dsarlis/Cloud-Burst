@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS tweet (
     tweetId BIGINT primary key,
     usedId BIGINT,
     creationTime TIMESTAMP not null,
-    text char(192) not null,
+    text varchar(512) not null,
     score int not null default 0
 ) ENGINE = MyISAM;
 
