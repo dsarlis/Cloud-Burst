@@ -9,10 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.cloudburst.etl.services.MySQLService;
 import org.cloudburst.etl.services.TweetsDataStoreService;
-import org.cloudburst.etl.util.AWSManager;
-import org.cloudburst.etl.util.MySQLConnectionFactory;
-import org.cloudburst.etl.util.TextCensor;
-import org.cloudburst.etl.util.TextSentimentGrader;
+import org.cloudburst.etl.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +19,7 @@ public class Main {
 	private final static int THREAD_NUMBER = Runtime.getRuntime().availableProcessors();
 
 	public static void main(String[] args) throws InterruptedException, SQLException {
+		LoggingConfigurator.configureFor(LoggingConfigurator.Environment.PRODUCTION);
 		TweetsDataStoreService tweetsDataStoreService = new TweetsDataStoreService(new AWSManager());
 		List<String> tweetFileNames = tweetsDataStoreService.getTweetFileNames();
 		Queue<String> fileNamesQueue = new ConcurrentLinkedQueue<>(tweetFileNames);

@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,7 +12,7 @@ import org.cloudburst.etl.model.Tweet;
 
 public class TextCensor {
 
-	private static final String BANNED_LIST_LOC = "src/main/resources/banned.txt";
+	private static final String BANNED_LIST_FILE_NAME = "/banned.txt";
 
 	/* Keeping a SET at class level. (Size of keySet = 390) */
 	private final static Set<String> bannedSetOfWords = Collections
@@ -31,7 +30,7 @@ public class TextCensor {
 	 * banned words.
 	 */
 	private static void populateBannedSetOfWords() throws IOException, FileNotFoundException {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(BANNED_LIST_LOC)));) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextCensor.class.getResourceAsStream(BANNED_LIST_FILE_NAME)))) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				bannedSetOfWords.add(getROT13DecryptedWord(line.trim()).toLowerCase());

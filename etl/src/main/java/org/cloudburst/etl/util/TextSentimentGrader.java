@@ -2,11 +2,8 @@ package org.cloudburst.etl.util;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,7 +11,7 @@ import org.cloudburst.etl.model.Tweet;
 
 public class TextSentimentGrader {
 
-	private static final String AFINN_FILE_LOC = "src/main/resources/afinn.txt";
+	private static final String AFINN_FILE_NAME = "/afinn.txt";
 
 	private static final String REGEX_NON_ALPHA_NUM = "[^A-Za-z0-9]";
 	private static final String TAB = "\t";
@@ -34,7 +31,7 @@ public class TextSentimentGrader {
 	 * words as labeled by Finn Årup Nielsen in 2009-2011.
 	 */
 	private static void populateSentimentMap() throws IOException {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(AFINN_FILE_LOC)))) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextSentimentGrader.class.getResourceAsStream(AFINN_FILE_NAME)))) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				String[] chunks = line.split(TAB);
