@@ -53,24 +53,43 @@ public class TextCensor {
 		return charSet.toString();
 	}
 
+	private static void censorWord(StringBuilder word, StringBuilder censoredContent) {
+		if (bannedSetOfWords.contains(word.toString().toLowerCase())) {
+			StringBuilder censoredWord = new StringBuilder();
+			for (int index = 0; index < word.length(); index++) {
+				if (index == 0 || index == word.length() - 1) {
+					censoredWord.append(word.charAt(index));
+				} else {
+					censoredWord.append('*');
+				}
+			}
+			censoredContent.append(censoredWord);
+		} else {
+			censoredContent.append(word);
+		}
+	}
+
 	/**
 	 * Censor checks on the tweet. Example : CENSOR becomes C****R.
 	 */
 	public static String censorBannedWords(Tweet tweet) {
-		String[] chunks = tweet.getText().split("[^A-Za-z0-9]");
-		for (int index = 0; index < chunks.length; index++) {
-			StringBuilder censoredChunk = new StringBuilder();
-			if (!chunks[index].isEmpty() && bannedSetOfWords.contains(chunks[index].toLowerCase())) {
-				for (int i = 0; i < chunks[index].length(); i++) {
-					if (i == 0 || i == chunks[index].length() - 1) {
-						censoredChunk.append(chunks[index].charAt(i));
-					} else {
-						censoredChunk.append('*');
-					}
+		String content = tweet.getText();
+		StringBuilder word = new StringBuilder();
+		StringBuilder censoredContent = new StringBuilder();
+		for (int i = 0; i < content.length(); i++) {
+			if (Character.isLetterOrDigit(content.charAt(i))) {
+				word.append(content.charAt(i));
+				if (i == content.length() - 1) {
+					censorWord(word, censoredContent);
 				}
+			} else {
+				if (word.length() > 0) {
+					censorWord(word, censoredContent);
+					word = new StringBuilder();
+				}
+				censoredContent.append(content.charAt(i));
 			}
-			chunks[index] = censoredChunk.toString();
-		}
-		return ""; /* TODO: Return updated tweet text. Chunks table has the censored words. Needs to be reassembled */
+ 		}
+		return censoredContent.toString();
 	}
 }
