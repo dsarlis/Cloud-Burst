@@ -26,7 +26,6 @@ public class Worker extends Thread {
 	private MySQLService mySQLService;
 	private List<Tweet> tweets;
 
-	private static Gson gson = new Gson();
 	private static Set<Long> uniqueTweetIds = Collections.newSetFromMap(new ConcurrentHashMap<Long, Boolean>());
 
 	public Worker(Queue<String> fileNamesQueue, TweetsDataStoreService tweetsDataStoreService, MySQLService mySQLService) {
