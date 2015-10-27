@@ -45,14 +45,14 @@ public class Worker extends Thread {
 				try(BufferedReader reader = new BufferedReader(new InputStreamReader(tweetsDataStoreService.getTweetFileInputStream(fileName)))) {
 					String line = null;
 					int count = 1;
-					tweets = new ArrayList<Tweet>();
+					tweets = new ArrayList<Tweet>(BATCH_SIZE);
 
 					try (FileOutputStream fileOutputStream = new FileOutputStream(outputFileName)) {
 						while ((line = reader.readLine()) != null) {
 							filterAndInsertTweet(fileOutputStream, line);
 							if (count == BATCH_SIZE) {
 								mySQLService.insertTweets(tweets);
-								tweets = new ArrayList<Tweet>();
+								tweets = new ArrayList<Tweet>(BATCH_SIZE);
 								count = 1;
 							}
 							count++;
