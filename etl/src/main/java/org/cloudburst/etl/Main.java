@@ -20,7 +20,7 @@ public class Main {
 	private final static long TWO_MINUTES = 120000;
 	private final static Logger logger = LoggerFactory.getLogger(Main.class);
 	private final static ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_NUMBER);
-	private final static AtomicInteger counter = new AtomicInteger(1);
+	private final static AtomicInteger counter = new AtomicInteger(0);
 	private static final String QUEUE_FILENAME = "queue.object";
 
 	public static void main(String[] args) throws InterruptedException, SQLException {
@@ -28,30 +28,31 @@ public class Main {
 		TweetsDataStoreService tweetsDataStoreService = new TweetsDataStoreService(new AWSManager());
 		List<String> tweetFileNames = tweetsDataStoreService.getTweetFileNames();
 
-		if (args.length == 2) {
-			tweetFileNames = tweetFileNames.subList(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
-		}
+		tweetFileNames = tweetFileNames.subList(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
 		initStructures();
 
 		Set<Long> uniqueTweetIds = getTweetIdsSet();
 
 		for (String tweetFileName : tweetFileNames) {
 			MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
-			Worker worker = new Worker(tweetFileName, tweetsDataStoreService, mySQLService, uniqueTweetIds, counter);
+			Worker worker = new Worker(tweetFileName, tweetsDataStoreService, mySQLService, uniqueTweetIds, counter, args[2]);
 
 			threadPool.execute(worker);
 		}
-
 		while (counter.get() < tweetFileNames.size()) {
-			logger.info("{} threads done", counter.get());
+			logger.info("done {}/{}", counter.get(), tweetFileNames.size());
 			Thread.sleep(TWO_MINUTES);
 		}
+		logger.info("done {}/{}", counter.get(), tweetFileNames.size());
 
 		writeTweetIdsSet(uniqueTweetIds);
 		MySQLConnectionFactory.shutdown();
+		threadPool.shutdown();
+		logger.info("I am done :)");
 	}
 
 	private static void writeTweetIdsSet(Set<Long> uniqueTweetIds) {
+		logger.info("Writing class");
 		try (FileOutputStream classFile = new FileOutputStream(QUEUE_FILENAME);
 			 ObjectOutputStream objectOutputStream = new ObjectOutputStream(classFile)) {
 
@@ -61,6 +62,7 @@ public class Main {
 		} catch (IOException ex) {
 			logger.error("Problem writing class", ex);
 		}
+		logger.info("Done writing class");
 	}
 
 	private static void initStructures() {

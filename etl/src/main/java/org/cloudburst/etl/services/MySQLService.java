@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 public class MySQLService {
 
 	private static final Logger logger = LoggerFactory.getLogger(MySQLService.class);
-	private static final String INSERT_QUERY = "insert into tweets (tweetId, userId, creationTime, text, score) values ";
+	private static final String INSERT_QUERY = "insert delayed into tweets (tweetId, userId, creationTime, text, score) values ";
 	private static final int COLUMN_COUNT = 5;
 
 	private MySQLConnectionFactory factory;
@@ -59,7 +59,7 @@ public class MySQLService {
 				preparedStatement.setLong(counter++, tweet.getTweetId());
 				preparedStatement.setLong(counter++, tweet.getUserId());
 				preparedStatement.setTimestamp(counter++, new Timestamp(tweet.getCreationTime().getTime()));
-				preparedStatement.setString(counter++, tweet.getText());
+				preparedStatement.setBytes(counter++, tweet.getText().getBytes());
 				preparedStatement.setInt(counter++, tweet.getScore());
 			}
 			preparedStatement.execute();

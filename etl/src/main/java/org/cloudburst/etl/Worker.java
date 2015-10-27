@@ -27,13 +27,15 @@ public class Worker implements Runnable {
 	private List<Tweet> tweets;
 	private Set<Long> uniqueTweetIds;
 	private AtomicInteger counter;
+	private String pathToFile;
 
-	public Worker(String fileName, TweetsDataStoreService tweetsDataStoreService, MySQLService mySQLService, Set<Long> uniqueTweetIds, AtomicInteger counter) {
+	public Worker(String fileName, TweetsDataStoreService tweetsDataStoreService, MySQLService mySQLService, Set<Long> uniqueTweetIds, AtomicInteger counter, String pathToFile) {
 		this.fileName = fileName;
 		this.tweetsDataStoreService = tweetsDataStoreService;
 		this.mySQLService = mySQLService;
 		this.uniqueTweetIds = uniqueTweetIds;
 		this.counter = counter;
+		this.pathToFile = pathToFile;
 	}
 
 	@Override
@@ -41,6 +43,7 @@ public class Worker implements Runnable {
 		String downloadedFileName = getDownloadedFileName(fileName);
 		String processedFileName = "out-" + downloadedFileName;
 
+		downloadedFileName = pathToFile + downloadedFileName;
 		logger.info("Processing file {}", fileName);
 		try  {
 			processFile(processedFileName, downloadedFileName);
@@ -48,7 +51,6 @@ public class Worker implements Runnable {
 			logger.error("Problem processing file=" + fileName, ex);
 		}
 		logger.info("Done processing file {}", fileName);
-		deleteFile(downloadedFileName);
 		counter.incrementAndGet();
 	}
 
