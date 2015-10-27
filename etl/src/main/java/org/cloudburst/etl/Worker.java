@@ -3,7 +3,6 @@ package org.cloudburst.etl;
 import java.io.*;
 import java.text.ParseException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.*;
 import org.cloudburst.etl.model.Tweet;
@@ -19,67 +18,96 @@ import org.slf4j.LoggerFactory;
 public class Worker extends Thread {
 
 	private static final Logger logger = LoggerFactory.getLogger(Worker.class);
-	private static final int BATCH_SIZE = 1000;
+	private static final int BATCH_SIZE = 100;
 
 	private Queue<String> fileNamesQueue;
 	private TweetsDataStoreService tweetsDataStoreService;
 	private MySQLService mySQLService;
 	private List<Tweet> tweets;
+	private Set<Long> uniqueTweetIds;
 
-	private static Set<Long> uniqueTweetIds = Collections.newSetFromMap(new ConcurrentHashMap<Long, Boolean>());
-
-	public Worker(Queue<String> fileNamesQueue, TweetsDataStoreService tweetsDataStoreService, MySQLService mySQLService) {
+	public Worker(Queue<String> fileNamesQueue, TweetsDataStoreService tweetsDataStoreService, MySQLService mySQLService, Set<Long> uniqueTweetIds) {
 		this.fileNamesQueue = fileNamesQueue;
 		this.tweetsDataStoreService = tweetsDataStoreService;
 		this.mySQLService = mySQLService;
+		this.uniqueTweetIds = uniqueTweetIds;
 	}
 
 	@Override
 	public void run() {
 		while (fileNamesQueue.size() > 0) {
 			String fileName = fileNamesQueue.poll();
-			String outputFileName = getOutputFileName(fileName);
 
 			if (fileName != null) {
-				logger.info("Reading file {}", fileName);
-				try(BufferedReader reader = new BufferedReader(new InputStreamReader(tweetsDataStoreService.getTweetFileInputStream(fileName)))) {
-					String line = null;
-					int count = 1;
-					tweets = new ArrayList<Tweet>(BATCH_SIZE);
+				String downloadedFileName = getDownloadedFileName(fileName);
+				String processedFileName = "out-" + downloadedFileName;
 
-					try (FileOutputStream fileOutputStream = new FileOutputStream(outputFileName)) {
-						while ((line = reader.readLine()) != null) {
-							filterAndInsertTweet(fileOutputStream, line);
-							if (count == BATCH_SIZE) {
-								mySQLService.insertTweets(tweets);
-								tweets = new ArrayList<Tweet>(BATCH_SIZE);
-								count = 1;
-							}
-							count++;
-						}
-						mySQLService.insertTweets(tweets);
-					} catch (IOException | ParseException ex) {
-						logger.error("Problem reading object or file", ex);
-					}
-
-					tweetsDataStoreService.saveTweetsFile(outputFileName);
-					deleteFile(outputFileName);
-					logger.info("Done with file {}", fileName);
-				} catch (IOException ex) {
-					logger.error("Problem reading file", ex);
+				logger.info("Processing file {}", fileName);
+				try  {
+					processFile(processedFileName, downloadedFileName);
+				} catch (Throwable ex) {
+					logger.error("Problem processing file=" + fileName, ex);
 				}
+				logger.info("Done processing file {}", fileName);
+				deleteFile(downloadedFileName);
 			}
 		}
-		mySQLService.close();
 	}
 
-	private void deleteFile(String outputFileName) {
-		File outputFile = new File(outputFileName);
+	private void downloadFile(String fileName, String downloadedFileName) {
+		String line = null;
+
+		logger.info("Downloading file={}", fileName);
+		try (BufferedReader s3Reader = new BufferedReader(new InputStreamReader(tweetsDataStoreService.getTweetFileInputStream(fileName)));
+			 FileOutputStream inputFileOutputStream = new FileOutputStream(downloadedFileName)) {
+			while ((line = s3Reader.readLine()) != null) {
+				line = line + "\n";
+				inputFileOutputStream.write(line.getBytes());
+			}
+		} catch (IOException ex) {
+			logger.error("Problem downloading file=" + fileName, ex);
+		}
+		logger.info("Done downloading file={}", fileName);
+	}
+
+	private void processFile(String processedFileName, String downloadedFileName) {
+		String line;
+		int bigCount = 1;
+		int count = 1;
+		tweets = new ArrayList<Tweet>(BATCH_SIZE);
+
+		logger.info("Reading file={}", downloadedFileName);
+		try (BufferedReader inputReader = new BufferedReader(new FileReader(downloadedFileName));
+             FileOutputStream fileOutputStream = new FileOutputStream(processedFileName)) {
+             while ((line = inputReader.readLine()) != null) {
+                filterAndInsertTweet(fileOutputStream, line);
+                if (count == BATCH_SIZE) {
+                    mySQLService.insertTweets(tweets);
+                    tweets = new ArrayList<Tweet>(BATCH_SIZE);
+                    count = 1;
+                }
+                if (bigCount % 50000 == 0) {
+                    logger.info("file={}, count={}", downloadedFileName, bigCount);
+                }
+                count++;
+                bigCount++;
+             }
+            mySQLService.insertTweets(tweets);
+        } catch (IOException | ParseException ex) {
+            logger.error("Problem reading file=" + downloadedFileName, ex);
+        }
+		logger.info("Done reading file={}", downloadedFileName);
+	}
+
+	private void deleteFile(String fileName) {
+		logger.info("Deleting file={}", fileName);
+		File outputFile = new File(fileName);
 
 		outputFile.delete();
+		logger.info("Done deleting file={}", fileName);
 	}
 
-	private String getOutputFileName(String fileName) {
+	private String getDownloadedFileName(String fileName) {
 		String[] tokens = fileName.split("/");
 
 		return tokens.length > 0 ? tokens[tokens.length - 1] : fileName;

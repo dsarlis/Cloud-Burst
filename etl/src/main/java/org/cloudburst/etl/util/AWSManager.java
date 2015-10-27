@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.services.s3.model.*;
 import org.cloudburst.etl.model.Tweet;
 
@@ -16,14 +17,20 @@ import org.slf4j.LoggerFactory;
 public class AWSManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(AWSManager.class);
+	private static final int TIMEOUT = 1800000;
+
 	private AmazonS3Client s3Client;
 
 	public AWSManager() {
 		String accessKey = System.getenv().get("CLOUD_BURST_ACCESS_KEY");
 		String secretKey = System.getenv().get("CLOUD_BURST_SECRET_KEY");
+		ClientConfiguration config = new ClientConfiguration();
+		config.setConnectionTimeout(TIMEOUT);
+		config.setSocketTimeout(TIMEOUT);
+
 		BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(accessKey, secretKey);
 
-		s3Client = new AmazonS3Client(basicAWSCredentials);
+		s3Client = new AmazonS3Client(basicAWSCredentials, config);
 	}
 
 	public List<String> listFiles(String bucketName, String prefix) {

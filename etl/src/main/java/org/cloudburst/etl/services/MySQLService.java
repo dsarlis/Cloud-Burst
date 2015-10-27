@@ -15,13 +15,13 @@ import org.slf4j.LoggerFactory;
 public class MySQLService {
 
 	private static final Logger logger = LoggerFactory.getLogger(MySQLService.class);
-	private static final String INSERT_QUERY = "insert delayed into tweets (tweetId, userId, creationTime, text, score) values ";
+	private static final String INSERT_QUERY = "insert into tweets (tweetId, userId, creationTime, text, score) values ";
 	private static final int COLUMN_COUNT = 5;
 
-	private Connection connection;
+	private MySQLConnectionFactory factory;
 
 	public MySQLService(MySQLConnectionFactory factory) throws SQLException {
-		this.connection = factory.getConnection();
+		this.factory  = factory;
 	}
 
 	private String getInsertPlaceholders(int placeholderCount) {
@@ -37,7 +37,10 @@ public class MySQLService {
 	}
 
 	public void insertTweets(List<Tweet> tweets) throws ParseException {
-		try {
+		if (tweets.size() <= 0) {
+			return;
+		}
+		try(Connection connection = factory.getConnection()) {
 			StringBuilder builder = new StringBuilder(INSERT_QUERY);
 			String placeholders = getInsertPlaceholders(COLUMN_COUNT);
 
@@ -62,14 +65,6 @@ public class MySQLService {
 			preparedStatement.execute();
 		} catch (SQLException ex) {
 			logger.error("Problem executing sql query", ex);
-		}
-	}
-
-	public void close(){
-		try {
-			connection.close();
-		} catch (SQLException ex) {
-			logger.error("Problem closing connection", ex);
 		}
 	}
 

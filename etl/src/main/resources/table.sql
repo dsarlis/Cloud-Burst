@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS tweets (
     tweetId BIGINT primary key,
-    userId BIGINT,
+    userId BIGINT not null,
     creationTime TIMESTAMP not null,
     text varchar(1024) not null,
     score int not null default 0
