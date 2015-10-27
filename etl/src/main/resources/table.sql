@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS tweet (
+CREATE TABLE IF NOT EXISTS tweets (
     tweetId BIGINT primary key,
     userId BIGINT,
     creationTime TIMESTAMP not null,
@@ -6,4 +6,4 @@ CREATE TABLE IF NOT EXISTS tweet (
     score int not null default 0
 ) ENGINE = MyISAM;
 
-create index userid_creation_date_index on tweet(userId, creationTime);
+create index userid_creation_date_index on tweets(userId, creationTime);
