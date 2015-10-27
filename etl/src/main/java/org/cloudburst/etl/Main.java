@@ -5,6 +5,9 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.cloudburst.etl.services.MySQLService;
 import org.cloudburst.etl.services.TweetsDataStoreService;
@@ -14,8 +17,11 @@ import org.slf4j.LoggerFactory;
 
 public class Main {
 
-	private final static Logger logger = LoggerFactory.getLogger(Main.class);
 	private final static int THREAD_NUMBER = Runtime.getRuntime().availableProcessors();
+	private final static long TWO_MINUTES = 120000;
+	private final static Logger logger = LoggerFactory.getLogger(Main.class);
+	private final static ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_NUMBER);
+	private final static AtomicInteger counter = new AtomicInteger(1);
 
 	public static void main(String[] args) throws InterruptedException, SQLException {
 		LoggingConfigurator.configureFor(LoggingConfigurator.Environment.PRODUCTION);
@@ -25,7 +31,6 @@ public class Main {
 		if (args.length == 2) {
 			tweetFileNames = tweetFileNames.subList(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
 		}
-		Queue<String> fileNamesQueue = new ConcurrentLinkedQueue<>(tweetFileNames);
 
 		Properties boneCPConfigProperties = new Properties();
 		try {
@@ -42,20 +47,18 @@ public class Main {
 			logger.error("Problem reading text-processing files!", ex);
 		}
 
-		Worker[] workers = new Worker[THREAD_NUMBER];
 		Set<Long> uniqueTweetIds = Collections.newSetFromMap(new ConcurrentHashMap<Long, Boolean>());
 
-		for (int i = 0; i < THREAD_NUMBER; i++) {
+		for (String tweetFileName : tweetFileNames) {
 			MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
-			workers[i] = new Worker(fileNamesQueue, tweetsDataStoreService, mySQLService, uniqueTweetIds);
+			Worker worker = new Worker(tweetFileName, tweetsDataStoreService, mySQLService, uniqueTweetIds, counter);
+
+			threadPool.execute(worker);
 		}
 
-		for (Worker worker : workers) {
-			worker.start();
-		}
-
-		for (Worker worker : workers) {
-			worker.join();
+		while (counter.get() < tweetFileNames.size()) {
+			logger.info("{} threads done", counter.get());
+			Thread.sleep(TWO_MINUTES);
 		}
 
 		MySQLConnectionFactory.shutdown();

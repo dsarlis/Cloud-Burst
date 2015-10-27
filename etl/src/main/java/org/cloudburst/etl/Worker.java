@@ -3,6 +3,7 @@ package org.cloudburst.etl;
 import java.io.*;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.*;
 import org.cloudburst.etl.model.Tweet;
@@ -15,43 +16,40 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Worker extends Thread {
+public class Worker implements Runnable {
 
 	private static final Logger logger = LoggerFactory.getLogger(Worker.class);
 	private static final int BATCH_SIZE = 100;
 
-	private Queue<String> fileNamesQueue;
+	private String fileName;
 	private TweetsDataStoreService tweetsDataStoreService;
 	private MySQLService mySQLService;
 	private List<Tweet> tweets;
 	private Set<Long> uniqueTweetIds;
+	private AtomicInteger counter;
 
-	public Worker(Queue<String> fileNamesQueue, TweetsDataStoreService tweetsDataStoreService, MySQLService mySQLService, Set<Long> uniqueTweetIds) {
-		this.fileNamesQueue = fileNamesQueue;
+	public Worker(String fileName, TweetsDataStoreService tweetsDataStoreService, MySQLService mySQLService, Set<Long> uniqueTweetIds, AtomicInteger counter) {
+		this.fileName = fileName;
 		this.tweetsDataStoreService = tweetsDataStoreService;
 		this.mySQLService = mySQLService;
 		this.uniqueTweetIds = uniqueTweetIds;
+		this.counter = counter;
 	}
 
 	@Override
 	public void run() {
-		while (fileNamesQueue.size() > 0) {
-			String fileName = fileNamesQueue.poll();
+		String downloadedFileName = getDownloadedFileName(fileName);
+		String processedFileName = "out-" + downloadedFileName;
 
-			if (fileName != null) {
-				String downloadedFileName = getDownloadedFileName(fileName);
-				String processedFileName = "out-" + downloadedFileName;
-
-				logger.info("Processing file {}", fileName);
-				try  {
-					processFile(processedFileName, downloadedFileName);
-				} catch (Throwable ex) {
-					logger.error("Problem processing file=" + fileName, ex);
-				}
-				logger.info("Done processing file {}", fileName);
-				deleteFile(downloadedFileName);
-			}
+		logger.info("Processing file {}", fileName);
+		try  {
+			processFile(processedFileName, downloadedFileName);
+		} catch (Throwable ex) {
+			logger.error("Problem processing file=" + fileName, ex);
 		}
+		logger.info("Done processing file {}", fileName);
+		deleteFile(downloadedFileName);
+		counter.incrementAndGet();
 	}
 
 	private void downloadFile(String fileName, String downloadedFileName) {
