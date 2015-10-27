@@ -37,7 +37,6 @@ public class MySQLService {
 	}
 
 	public void insertTweets(List<Tweet> tweets) throws ParseException {
-		logger.info("Inserting tweets={}", tweets);
 		try {
 			StringBuilder builder = new StringBuilder(INSERT_QUERY);
 			String placeholders = getInsertPlaceholders(COLUMN_COUNT);
@@ -64,7 +63,6 @@ public class MySQLService {
 		} catch (SQLException ex) {
 			logger.error("Problem executing sql query", ex);
 		}
-		logger.info("Done inserting tweets={}", tweets);
 	}
 
 	public void close(){
