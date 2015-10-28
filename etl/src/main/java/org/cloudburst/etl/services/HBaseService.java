@@ -74,6 +74,8 @@
 //        job.setJarByClass(HBaseService.class);
 //        job.setOutputKeyClass(ImmutableBytesWritable.class);
 //        job.setOutputValueClass(KeyValue.class);
+//        job.setMapOutputKeyClass(Text.class);
+//        job.setMapOutputValueClass(Text.class);
 //
 //        job.setMapperClass(Map.class);
 //        job.setReducerClass(Reduce.class);
