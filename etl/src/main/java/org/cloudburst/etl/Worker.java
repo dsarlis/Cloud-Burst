@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class Worker implements Runnable {
 
 	private static final Logger logger = LoggerFactory.getLogger(Worker.class);
-	private static final int BATCH_SIZE = 100;
+	private static final int BATCH_SIZE = 1000;
 
 	private String fileName;
 	private TweetsDataStoreService tweetsDataStoreService;
