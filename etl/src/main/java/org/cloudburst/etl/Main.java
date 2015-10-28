@@ -23,29 +23,97 @@ public class Main {
 	private final static AtomicInteger counter = new AtomicInteger(0);
 	private static final String QUEUE_FILENAME = "queue.object";
 
+	private static void transformFiles(String directoryFileName) throws InterruptedException {
+		File directory = new File(directoryFileName);
+		File[] files = directory.listFiles();
+
+		if (files != null) {
+			List<String> tweetFileNames = new ArrayList<String>();
+
+			for (File file : files) {
+				tweetFileNames.add(file.getName());
+			}
+			for (int chunk = 0; chunk < tweetFileNames.size(); chunk += THREAD_NUMBER) {
+				for (String tweetFileName : tweetFileNames.subList(chunk, chunk + THREAD_NUMBER < tweetFileNames.size() ? chunk + THREAD_NUMBER : tweetFileNames.size())) {
+					TransformerWorker worker = new TransformerWorker(tweetFileName, counter);
+
+					threadPool.execute(worker);
+				}
+				while (counter.get() < files.length) {
+					logger.info("done {}/{}", counter.get(), files.length);
+					Thread.sleep(TWO_MINUTES);
+				}
+				logger.info("done {}/{}", counter.get(), files.length);
+			}
+			threadPool.shutdown();
+		}
+	}
+
+	private static void insertFiles(String directoryFileName) throws InterruptedException, SQLException {
+		File directory = new File(directoryFileName);
+		File[] files = directory.listFiles();
+
+		if (files != null) {
+			Properties boneCPConfigProperties = new Properties();
+			try {
+				boneCPConfigProperties.load(Main.class.getResourceAsStream("/bonecp.properties"));
+			} catch (IOException ex) {
+				logger.error("Problem reading properties", ex);
+			}
+
+			MySQLConnectionFactory.init(boneCPConfigProperties);
+			List<String> tweetFileNames = new ArrayList<String>();
+
+			for (File file : files) {
+				tweetFileNames.add(file.getName());
+			}
+
+			for (int chunk = 0; chunk < tweetFileNames.size(); chunk += THREAD_NUMBER) {
+				for (String tweetFileName : tweetFileNames.subList(chunk, chunk + THREAD_NUMBER < tweetFileNames.size() ? chunk + THREAD_NUMBER : tweetFileNames.size())) {
+					MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
+					NewWorker worker = new NewWorker(tweetFileName, mySQLService, counter, directoryFileName);
+
+
+					threadPool.execute(worker);
+				}
+				while (counter.get() < files.length) {
+					logger.info("done {}/{}", counter.get(), files.length);
+					Thread.sleep(TWO_MINUTES);
+				}
+				logger.info("done {}/{}", counter.get(), files.length);
+			}
+			threadPool.shutdown();
+		}
+	}
+
 	public static void main(String[] args) throws InterruptedException, SQLException {
 		LoggingConfigurator.configureFor(LoggingConfigurator.Environment.PRODUCTION);
 		TweetsDataStoreService tweetsDataStoreService = new TweetsDataStoreService(new AWSManager());
 		List<String> tweetFileNames = tweetsDataStoreService.getTweetFileNames();
+		int from = Integer.parseInt(args[0]);
+		int to = Integer.parseInt(args[1]);
 
-		tweetFileNames = tweetFileNames.subList(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+		tweetFileNames = tweetFileNames.subList(from, to);
 		initStructures();
 
 		Set<Long> uniqueTweetIds = getTweetIdsSet();
 
-		for (String tweetFileName : tweetFileNames) {
-			MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
-			Worker worker = new Worker(tweetFileName, tweetsDataStoreService, mySQLService, uniqueTweetIds, counter, args[2]);
+		for (int chunk = 0; chunk < tweetFileNames.size(); chunk += THREAD_NUMBER) {
+			for (String tweetFileName : tweetFileNames.subList(chunk, chunk + THREAD_NUMBER < tweetFileNames.size() ? chunk + THREAD_NUMBER : tweetFileNames.size())) {
+				MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
+				Worker worker = new Worker(tweetFileName, tweetsDataStoreService, mySQLService, uniqueTweetIds, counter, args[2]);
 
-			threadPool.execute(worker);
-		}
-		while (counter.get() < tweetFileNames.size()) {
+				threadPool.execute(worker);
+			}
+			while (counter.get() < tweetFileNames.size()) {
+				logger.info("done {}/{}", counter.get(), tweetFileNames.size());
+				Thread.sleep(TWO_MINUTES);
+			}
 			logger.info("done {}/{}", counter.get(), tweetFileNames.size());
-			Thread.sleep(TWO_MINUTES);
 		}
-		logger.info("done {}/{}", counter.get(), tweetFileNames.size());
-
-		writeTweetIdsSet(uniqueTweetIds);
+		if (to < tweetFileNames.size()) {
+			writeTweetIdsSet(uniqueTweetIds);
+		}
 		MySQLConnectionFactory.shutdown();
 		threadPool.shutdown();
 		logger.info("I am done :)");
