@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.cloudburst.etl.util.AWSManager;
 
+/**
+ * Service to handle tweets data set.
+ */
 public class TweetsDataStoreService {
 
     private static final String CMU_DATASETS_BUCKET = "cmucc-datasets";

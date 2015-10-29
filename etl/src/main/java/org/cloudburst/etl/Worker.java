@@ -16,6 +16,9 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Thread that will read file, filter tweets, insert them into MySQL and write them into a file.
+ */
 public class Worker implements Runnable {
 
 	private static final Logger logger = LoggerFactory.getLogger(Worker.class);
@@ -25,7 +28,13 @@ public class Worker implements Runnable {
 	private TweetsDataStoreService tweetsDataStoreService;
 	private MySQLService mySQLService;
 	private List<Tweet> tweets;
+	/**
+	 * Sets to avoid using same tweet id.
+	 */
 	private Set<Long> uniqueTweetIds;
+	/**
+	 * Count how many threads are done.
+	 */
 	private AtomicInteger counter;
 	private String pathToFile;
 
@@ -54,6 +63,9 @@ public class Worker implements Runnable {
 		counter.incrementAndGet();
 	}
 
+	/**
+	 * Download tweet file from s3.
+	 */
 	private void downloadFile(String fileName, String downloadedFileName) {
 		String line = null;
 
@@ -70,6 +82,9 @@ public class Worker implements Runnable {
 		logger.info("Done downloading file={}", fileName);
 	}
 
+	/**
+	 * Process file: ignore tweets, insert into MySQL correct ones and write them to a file.
+	 */
 	private void processFile(String processedFileName, String downloadedFileName) {
 		String line;
 		int bigCount = 1;
@@ -99,6 +114,9 @@ public class Worker implements Runnable {
 		logger.info("Done reading file={}", downloadedFileName);
 	}
 
+	/**
+	 * Delete file.
+	 */
 	private void deleteFile(String fileName) {
 		logger.info("Deleting file={}", fileName);
 		File outputFile = new File(fileName);
@@ -113,6 +131,9 @@ public class Worker implements Runnable {
 		return tokens.length > 0 ? tokens[tokens.length - 1] : fileName;
 	}
 
+	/**
+	 * Check if tweet is valid and process it.
+	 */
 	private void filterAndInsertTweet(FileOutputStream fileOutputStream, String line) throws ParseException, IOException {
 		try {
 			/* Checks Malformed Tweets */
@@ -132,6 +153,9 @@ public class Worker implements Runnable {
 		}
 	}
 
+	/**
+	 * Read json tweet.
+	 */
 	private Tweet generateTweet(JsonElement jsonElement)  {
 		JsonObject jsonObject = jsonElement.getAsJsonObject();
 

@@ -14,6 +14,9 @@ import org.cloudburst.etl.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Main class to process tweets and insert them into MySQL and create an output file.
+ */
 public class Main {
 
 	private final static int THREAD_NUMBER = Runtime.getRuntime().availableProcessors();
@@ -23,6 +26,9 @@ public class Main {
 	private final static AtomicInteger counter = new AtomicInteger(0);
 	private static final String QUEUE_FILENAME = "queue.object";
 
+	/**
+	 * Method to create threads that will transform one file into another.
+	 */
 	private static void transformFiles(String directoryFileName) throws InterruptedException {
 		File directory = new File(directoryFileName);
 		File[] files = directory.listFiles();
@@ -34,14 +40,15 @@ public class Main {
 				tweetFileNames.add(file.getName());
 			}
 			for (int chunk = 0; chunk < tweetFileNames.size(); chunk += THREAD_NUMBER) {
-				for (String tweetFileName : tweetFileNames.subList(chunk, chunk + THREAD_NUMBER < tweetFileNames.size() ? chunk + THREAD_NUMBER : tweetFileNames.size())) {
+				int to = chunk + THREAD_NUMBER < tweetFileNames.size() ? chunk + THREAD_NUMBER : tweetFileNames.size();
+				for (String tweetFileName : tweetFileNames.subList(chunk, to)) {
 					TransformerWorker worker = new TransformerWorker(tweetFileName, counter);
 
 					threadPool.execute(worker);
 				}
-				while (counter.get() < files.length) {
-					logger.info("done {}/{}", counter.get(), files.length);
-					Thread.sleep(TWO_MINUTES);
+				while (counter.get() < to) {
+					logger.info("done {}/{}", counter.get(), to);
+					Thread.sleep(TWO_MINUTES/2);
 				}
 				logger.info("done {}/{}", counter.get(), files.length);
 			}
@@ -49,6 +56,9 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Method to only insert into MySQL.
+	 */
 	private static void insertFiles(String directoryFileName) throws InterruptedException, SQLException {
 		File directory = new File(directoryFileName);
 		File[] files = directory.listFiles();
@@ -63,31 +73,39 @@ public class Main {
 
 			MySQLConnectionFactory.init(boneCPConfigProperties);
 			List<String> tweetFileNames = new ArrayList<String>();
+			Arrays.sort(files);
 
 			for (File file : files) {
 				tweetFileNames.add(file.getName());
 			}
 
+			Set<Long> uniqueTweetIds = Collections.newSetFromMap(new ConcurrentHashMap<Long, Boolean>());
 			for (int chunk = 0; chunk < tweetFileNames.size(); chunk += THREAD_NUMBER) {
-				for (String tweetFileName : tweetFileNames.subList(chunk, chunk + THREAD_NUMBER < tweetFileNames.size() ? chunk + THREAD_NUMBER : tweetFileNames.size())) {
+				int to = chunk + THREAD_NUMBER < tweetFileNames.size() ? chunk + THREAD_NUMBER : tweetFileNames.size();
+				for (String tweetFileName : tweetFileNames.subList(chunk, to)) {
 					MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
-					NewWorker worker = new NewWorker(tweetFileName, mySQLService, counter, directoryFileName);
-
+					NewWorker worker = new NewWorker(tweetFileName, mySQLService, counter, directoryFileName, uniqueTweetIds);
 
 					threadPool.execute(worker);
 				}
-				while (counter.get() < files.length) {
-					logger.info("done {}/{}", counter.get(), files.length);
+				while (counter.get() < to) {
+					logger.info("done {}/{}", counter.get(), to);
 					Thread.sleep(TWO_MINUTES);
 				}
-				logger.info("done {}/{}", counter.get(), files.length);
+				logger.info("done {}/{}", counter.get(), tweetFileNames.size());
 			}
 			threadPool.shutdown();
 		}
 	}
 
+	/**
+	 * Main method. It will process all tweet files, read them, insert them into MySQL and create and output file.
+	 * It can be done in parts:
+	 * First argument is from, second to, and third the file prefix.
+	 */
 	public static void main(String[] args) throws InterruptedException, SQLException {
 		LoggingConfigurator.configureFor(LoggingConfigurator.Environment.PRODUCTION);
+
 		TweetsDataStoreService tweetsDataStoreService = new TweetsDataStoreService(new AWSManager());
 		List<String> tweetFileNames = tweetsDataStoreService.getTweetFileNames();
 		int from = Integer.parseInt(args[0]);
@@ -119,6 +137,9 @@ public class Main {
 		logger.info("I am done :)");
 	}
 
+	/**
+	 * Serialize Tweet Ids set.
+	 */
 	private static void writeTweetIdsSet(Set<Long> uniqueTweetIds) {
 		logger.info("Writing class");
 		try (FileOutputStream classFile = new FileOutputStream(QUEUE_FILENAME);
@@ -133,6 +154,9 @@ public class Main {
 		logger.info("Done writing class");
 	}
 
+	/**
+	 * Initialize structures: MySQL, sentiment list and score list.
+	 */
 	private static void initStructures() {
 		Properties boneCPConfigProperties = new Properties();
 		try {
@@ -150,6 +174,9 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Deserialize Tweet Ids set.
+	 */
 	private static Set<Long> getTweetIdsSet() {
 		Set<Long> uniqueTweetIds = null;
 

@@ -6,6 +6,9 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * File to configure logging. It read logback configuration.
+ */
 public class LoggingConfigurator {
 
     private static final String PRODUCTION_PATH = "/production_logback.xml";
