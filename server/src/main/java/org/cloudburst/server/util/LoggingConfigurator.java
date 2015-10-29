@@ -6,6 +6,9 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Logging configurator using logback.
+ */
 public class LoggingConfigurator {
 
     private static final String PRODUCTION_PATH = LoggingConfigurator.class.getResource("/production_logback.xml").toString().replace("file:", "");

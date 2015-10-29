@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+/**
+ * Servlet to answer Q1.
+ */
 public class Q1Servlet extends HttpServlet {
 
     private final static Logger logger = LoggerFactory.getLogger(Q1Servlet.class);
