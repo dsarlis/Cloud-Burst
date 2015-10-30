@@ -20,6 +20,7 @@ public class HBaseService {
     private String qualifier;
 
     public HBaseService(String tableName, String columnFamily, String qualifier) {
+        // Create a new HBase configuration
         Configuration config = HBaseConfiguration.create();
         try {
             this.table = new HTable(config, tableName);
