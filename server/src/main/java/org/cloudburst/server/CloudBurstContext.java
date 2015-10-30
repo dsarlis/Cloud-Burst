@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.TimeZone;
 
+/**
+ * Servlet context where everything is initialized.
+ */
 public class CloudBurstContext implements ServletContextListener {
 
     private final static Logger logger = LoggerFactory.getLogger(CloudBurstContext.class);

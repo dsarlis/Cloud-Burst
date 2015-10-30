@@ -12,10 +12,13 @@ import org.cloudburst.etl.util.MySQLConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Service to handle inserts into MySQL.
+ */
 public class MySQLService {
 
 	private static final Logger logger = LoggerFactory.getLogger(MySQLService.class);
-	private static final String INSERT_QUERY = "insert delayed into tweets (tweetId, userId, creationTime, text, score) values ";
+	private static final String INSERT_QUERY = "insert delayed into tweets (tweetId, userId, creationTime, score, text) values ";
 	private static final int COLUMN_COUNT = 5;
 
 	private MySQLConnectionFactory factory;
@@ -24,6 +27,9 @@ public class MySQLService {
 		this.factory  = factory;
 	}
 
+	/**
+	 * Return placeholders that will be used in the insert.
+	 */
 	private String getInsertPlaceholders(int placeholderCount) {
 		StringBuilder builder = new StringBuilder("(");
 
@@ -36,6 +42,9 @@ public class MySQLService {
 		return builder.append(")").toString();
 	}
 
+	/**
+	 * Reads tweet list and do a multiple value insert.
+	 */
 	public void insertTweets(List<Tweet> tweets) throws ParseException {
 		if (tweets.size() <= 0) {
 			return;
@@ -59,8 +68,8 @@ public class MySQLService {
 				preparedStatement.setLong(counter++, tweet.getTweetId());
 				preparedStatement.setLong(counter++, tweet.getUserId());
 				preparedStatement.setTimestamp(counter++, new Timestamp(tweet.getCreationTime().getTime()));
-				preparedStatement.setBytes(counter++, tweet.getText().getBytes());
 				preparedStatement.setInt(counter++, tweet.getScore());
+				preparedStatement.setBytes(counter++, tweet.getText().getBytes());
 			}
 			preparedStatement.execute();
 		} catch (SQLException ex) {

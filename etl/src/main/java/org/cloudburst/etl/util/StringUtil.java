@@ -1,9 +1,15 @@
 package org.cloudburst.etl.util;
 
+/**
+ * Util class for string.
+ */
 public class StringUtil {
 
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
+    /**
+     * Translates by array into String.
+     */
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for ( int j = 0; j < bytes.length; j++ ) {

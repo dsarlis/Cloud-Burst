@@ -9,11 +9,17 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
+/**
+ * Load BoneCP connection pool.
+ */
 public class MySQLConnectionFactory {
 
     private final static Logger logger = LoggerFactory.getLogger(MySQLConnectionFactory.class);
     private static BoneCP connectionPool = null;
 
+    /**
+     * Load configuration from a file an create a connection pool with it.
+     */
     public static void init(Properties boneCPConfigProperties) {
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -38,10 +44,16 @@ public class MySQLConnectionFactory {
         }
     }
 
+    /**
+     * Get a SQL connection.
+     */
     public Connection getConnection() throws SQLException {
         return connectionPool.getConnection();
     }
 
+    /**
+     * Shutdown connection pool.
+     */
     public static void shutdown() {
         connectionPool.shutdown();
     }

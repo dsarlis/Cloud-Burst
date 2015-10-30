@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
+/**
+ * Servlet to check health status from instane.
+ */
 public class HeartBeatServlet extends HttpServlet {
 
     private final static Logger logger = LoggerFactory.getLogger(HeartBeatServlet.class);

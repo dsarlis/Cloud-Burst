@@ -12,6 +12,9 @@ import org.cloudburst.server.util.MySQLConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Service to call MySQL.
+ */
 public class MySQLService {
 
 	private static final char SPACE = ' ';
@@ -28,23 +31,9 @@ public class MySQLService {
 		this.factory = factory;
 	}
 
-	public String testStatement() {
-		StringBuilder builder = new StringBuilder();
-
-		try (Connection connection = factory.getConnection()) {
-			Statement stmt = connection.createStatement();
-			ResultSet rs = stmt.executeQuery("select * from tweets");
-
-			while (rs.next()) {
-				builder.append(rs.getInt(1) + ",");
-			}
-		} catch (SQLException ex) {
-			logger.error("Problem executing statement", ex);
-		}
-
-		return builder.toString();
-	}
-
+	/**
+	 * Return formatted result with the (tweet id, score) from a given user and timestamp.
+	 */
 	public String getTweetResult(long userId, String creationTime) {
 
 		StringBuilder builder = new StringBuilder();

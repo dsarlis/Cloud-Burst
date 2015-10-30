@@ -12,9 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.cloudburst.server.services.MySQLService;
 import org.cloudburst.server.util.MySQLConnectionFactory;
 
+/**
+ * Servlet for Q2.
+ */
 public class Q2Servlet extends HttpServlet {
-
-	private static final long serialVersionUID = 1L;
 
 	private MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
 
@@ -30,12 +31,14 @@ public class Q2Servlet extends HttpServlet {
 		initMySqlService();
 	}
 
+	/**
+	 * Initialize MySQL connection pooll.
+	 */
 	private void initMySqlService() {
 		Properties boneCPConfigProperties = new Properties();
 		try {
 			boneCPConfigProperties.load(Q2Servlet.class.getResourceAsStream("/bonecp.properties"));
-		} catch (IOException ex) {
-		}
+		} catch (IOException ex) {}
 
 		MySQLConnectionFactory.init(boneCPConfigProperties);
 	}

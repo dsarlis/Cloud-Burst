@@ -14,6 +14,9 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class to manage communications with Amazon.
+ */
 public class AWSManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(AWSManager.class);
@@ -33,6 +36,9 @@ public class AWSManager {
 		s3Client = new AmazonS3Client(basicAWSCredentials, config);
 	}
 
+	/**
+	 * List all files in the bucket with the given prefix.
+	 */
 	public List<String> listFiles(String bucketName, String prefix) {
 		logger.info("Listing files with bucketName={} and prefix={}", bucketName, prefix);
 		ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName);
@@ -56,6 +62,9 @@ public class AWSManager {
 		return files;
 	}
 
+	/**
+	 * Get input stream from the given object with the given key in bucket.
+	 */
 	public InputStream getObjectInputStream(String bucketName, String key) {
 		logger.info("Getting object input stream bucketName={} and key={}", bucketName, key);
 		S3Object s3object = s3Client.getObject(new GetObjectRequest(bucketName, key));
@@ -64,6 +73,9 @@ public class AWSManager {
 		return s3object.getObjectContent();
 	}
 
+	/**
+	 * Stores file in a bucket with the given key.
+	 */
 	public void storeInBucket(String finalName, String bucketName, String key) {
 		logger.info("Storing fileName={} in bucketName={} and key={}", finalName, bucketName, key);
 		File file = new File(finalName);
