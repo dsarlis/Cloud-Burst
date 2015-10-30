@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * File to configure logging. It read logback configuration.
+ * Logging configurator using logback.
  */
 public class LoggingConfigurator {
 
@@ -33,6 +33,9 @@ public class LoggingConfigurator {
         configureWithPath(environment.path);
     }
 
+    /**
+     * Reads configuration from the given file and loads it.
+     */
     private static void configureWithPath(String pathToConfig) {
         if (!configured) {
             LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();

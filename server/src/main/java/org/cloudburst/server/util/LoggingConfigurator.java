@@ -33,6 +33,9 @@ public class LoggingConfigurator {
         configureWithPath(environment.pathToConfig);
     }
 
+    /**
+     * Reads configuration from the given file and loads it.
+     */
     private static void configureWithPath(String pathToConfig) {
         if (!configured) {
             LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();

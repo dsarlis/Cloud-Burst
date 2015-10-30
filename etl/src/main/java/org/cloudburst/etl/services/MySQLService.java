@@ -27,6 +27,9 @@ public class MySQLService {
 		this.factory  = factory;
 	}
 
+	/**
+	 * Return placeholders that will be used in the insert.
+	 */
 	private String getInsertPlaceholders(int placeholderCount) {
 		StringBuilder builder = new StringBuilder("(");
 

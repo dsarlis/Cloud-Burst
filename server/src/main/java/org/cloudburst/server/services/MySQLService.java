@@ -32,7 +32,7 @@ public class MySQLService {
 	}
 
 	/**
-	 * Return formatted resylt with the (tweet id, score) from a given user and timestamp.
+	 * Return formatted result with the (tweet id, score) from a given user and timestamp.
 	 */
 	public String getTweetResult(long userId, String creationTime) {
 

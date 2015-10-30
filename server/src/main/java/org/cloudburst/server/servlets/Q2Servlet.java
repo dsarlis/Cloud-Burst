@@ -12,6 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.cloudburst.server.services.MySQLService;
 import org.cloudburst.server.util.MySQLConnectionFactory;
 
+/**
+ * Servlet for Q2.
+ */
 public class Q2Servlet extends HttpServlet {
 
 	private MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
