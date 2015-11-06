@@ -6,4 +6,12 @@ CREATE TABLE IF NOT EXISTS tweets (
     text VARBINARY(1024) not null
 ) ENGINE = MyISAM;
 
+CREATE TABLE IF NOT EXISTS hashtags (
+    hashtag VARBINARY(1024) not null,
+    tweetId BIGINT not null,
+    count int not null,
+    PRIMARY KEY (hashtag, tweetId)
+) ENGINE = MyISAM;
+
+
 create index userid_creation_date_index on tweets(userId, creationTime);

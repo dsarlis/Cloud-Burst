@@ -1,8 +1,11 @@
 package org.cloudburst.etl.model;
 
+import org.cloudburst.etl.util.StringUtil;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -15,34 +18,32 @@ public class Tweet {
 
 	private long tweetId;
 
+	private int followersCount;
+
 	private User user;
 
 	private String createdAt;
 
 	private String text;
 
+	/* Not part of raw JSON */
+	private Map<String, Integer> hashTags;
+
+	private int sentimentScore;
+
 	private Date createdAtDate = null;
 
-	/* Not part of raw JSON */
-	private int score;
-
-	public Tweet(long tweetId, long userId, String createdAt, String text) throws ParseException {
-		setTweetId(tweetId);
+	public Tweet(long tweetId, long userId, int followersCount, String createdAt, String text, Map<String, Integer> hashTags) throws ParseException {
+		this.tweetId = tweetId;
+		this.createdAt = createdAt;
+		this.text = text;
+		this.followersCount = followersCount;
+		this.hashTags = hashTags;
 		setUserId(userId);
-		setCreationTime(createdAt);
-		setText(text);
 	}
 
 	public long getTweetId() {
 		return tweetId;
-	}
-
-	public void setTweetId(long tweetId) {
-		this.tweetId = tweetId;
-	}
-
-	public long getUserId() {
-		return user.getUserId();
 	}
 
 	public void setUserId(long userId) {
@@ -57,28 +58,20 @@ public class Tweet {
 		return createdAtDate;
 	}
 
-	public void setCreationTime(String createdAt) throws ParseException {
-		this.createdAt = createdAt;
-	}
-
 	public String getText() {
 		return text;
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public int getFollowersCount() {
+		return followersCount;
 	}
 
-	public int getScore() {
-		return score;
-	}
-
-	public void setScore(int score) {
-		this.score = score;
+	public void setFollowersCount(int followersCount) {
+		this.followersCount = followersCount;
 	}
 
 	public void adjustScore(int sentimentScore) {
-		this.score += sentimentScore;
+		this.sentimentScore += sentimentScore;
 	}
 
 	private Date toUTCDate(String createdAt) throws ParseException {
@@ -88,18 +81,26 @@ public class Tweet {
 		return format.parse(createdAt);
 	}
 
+	public int getImpactScore() {
+		return sentimentScore * (1 + followersCount);
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		String separator = "\t";
 
+		builder.append(StringUtil.join(hashTags, ",", separator));
+		builder.append(separator);
 		builder.append(tweetId);
 		builder.append(separator);
 		builder.append(user.getUserId());
 		builder.append(separator);
 		builder.append(createdAt);
 		builder.append(separator);
-		builder.append(score);
+		builder.append(sentimentScore);
+		builder.append(separator);
+		builder.append(getImpactScore());
 		builder.append(separator);
 		builder.append(text.replace("\n", "\\n").replace("\r", "\\r"));
 		builder.append("\n");

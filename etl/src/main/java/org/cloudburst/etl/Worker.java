@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.*;
 import org.cloudburst.etl.model.Tweet;
-import org.cloudburst.etl.services.MySQLService;
 import org.cloudburst.etl.services.TweetsDataStoreService;
 import org.cloudburst.etl.util.TextCensor;
 import org.cloudburst.etl.util.TextSentimentGrader;
@@ -22,12 +21,9 @@ import org.slf4j.LoggerFactory;
 public class Worker implements Runnable {
 
 	private static final Logger logger = LoggerFactory.getLogger(Worker.class);
-	private static final int BATCH_SIZE = 1000;
 
 	private String fileName;
 	private TweetsDataStoreService tweetsDataStoreService;
-	private MySQLService mySQLService;
-	private List<Tweet> tweets;
 	/**
 	 * Sets to avoid using same tweet id.
 	 */
@@ -38,11 +34,9 @@ public class Worker implements Runnable {
 	private AtomicInteger counter;
 	private String pathToFile;
 
-	public Worker(String fileName, TweetsDataStoreService tweetsDataStoreService, MySQLService mySQLService, Set<Long> uniqueTweetIds, AtomicInteger counter, String pathToFile) {
+	public Worker(String fileName, TweetsDataStoreService tweetsDataStoreService, Set<Long> uniqueTweetIds, AtomicInteger counter, String pathToFile) {
 		this.fileName = fileName;
 		this.tweetsDataStoreService = tweetsDataStoreService;
-		this.mySQLService = mySQLService;
-		this.uniqueTweetIds = uniqueTweetIds;
 		this.counter = counter;
 		this.pathToFile = pathToFile;
 	}
@@ -53,13 +47,15 @@ public class Worker implements Runnable {
 		String processedFileName = "out-" + downloadedFileName;
 
 		downloadedFileName = pathToFile + downloadedFileName;
-		logger.info("Processing file {}", fileName);
+		downloadFile(fileName, downloadedFileName);
+		logger.info("Processing file {}", downloadedFileName);
 		try  {
 			processFile(processedFileName, downloadedFileName);
 		} catch (Throwable ex) {
-			logger.error("Problem processing file=" + fileName, ex);
+			logger.error("Problem processing file=" + downloadedFileName, ex);
 		}
-		logger.info("Done processing file {}", fileName);
+		logger.info("Done processing file {}", downloadedFileName);
+		deleteFile(downloadedFileName);
 		counter.incrementAndGet();
 	}
 
@@ -88,26 +84,16 @@ public class Worker implements Runnable {
 	private void processFile(String processedFileName, String downloadedFileName) {
 		String line;
 		int bigCount = 1;
-		int count = 1;
-		tweets = new ArrayList<Tweet>(BATCH_SIZE);
-
 		logger.info("Reading file={}", downloadedFileName);
 		try (BufferedReader inputReader = new BufferedReader(new FileReader(downloadedFileName));
              FileOutputStream fileOutputStream = new FileOutputStream(processedFileName)) {
              while ((line = inputReader.readLine()) != null) {
                 filterAndInsertTweet(fileOutputStream, line);
-                if (count == BATCH_SIZE) {
-                    mySQLService.insertTweets(tweets);
-                    tweets = new ArrayList<Tweet>(BATCH_SIZE);
-                    count = 1;
-                }
                 if (bigCount % 50000 == 0) {
                     logger.info("file={}, count={}", downloadedFileName, bigCount);
                 }
-                count++;
                 bigCount++;
              }
-            mySQLService.insertTweets(tweets);
         } catch (IOException | ParseException ex) {
             logger.error("Problem reading file=" + downloadedFileName, ex);
         }
@@ -146,7 +132,6 @@ public class Worker implements Runnable {
 				TextSentimentGrader.addSentimentScore(tweet);
 				TextCensor.censorBannedWords(tweet);
 				fileOutputStream.write(tweet.toString().getBytes());
-				tweets.add(tweet);
 			}
 		} catch (JsonSyntaxException ex) {
 			/* Eat up the exception to speed up. */
@@ -160,7 +145,18 @@ public class Worker implements Runnable {
 		JsonObject jsonObject = jsonElement.getAsJsonObject();
 
 		try {
-			return new Tweet(jsonObject.get("id").getAsLong(), jsonObject.getAsJsonObject("user").get("id").getAsLong(), jsonObject.get("created_at").getAsString(), jsonObject.get("text").getAsString());
+			JsonObject userObject = jsonObject.getAsJsonObject("user");
+			JsonArray hashTagsArray = jsonObject.getAsJsonObject("entities").get("hashtags").getAsJsonArray();
+			Map<String, Integer> hashTags = new HashMap<String, Integer>();
+
+			for (JsonElement hashTag : hashTagsArray) {
+				String text = hashTag.getAsJsonObject().get("text").getAsString();
+				Integer count = hashTags.get(text);
+
+				hashTags.put(text, count != null ? count + 1 : 1);
+			}
+
+			return new Tweet(jsonObject.get("id").getAsLong(), userObject.get("id").getAsLong(), userObject.get("followers_count").getAsInt(), jsonObject.get("created_at").getAsString(), jsonObject.get("text").getAsString(), hashTags);
 		} catch (Throwable ex) {
 			return null;
 		}
