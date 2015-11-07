@@ -22,12 +22,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class HBaseLoader {
-    private static final String TABLE_NAME = "tweets";
+    private static final String TABLE_NAME = "q2";
+    private static final String TAB = "\t";
 
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String line = value.toString();
-            String[] fields = line.split("\t");
+            String[] fields = line.split(TAB);
 
             String outputKey = fields[1]+ "_" + fields[2];
             String outputValue = fields[0] + ":" + fields[3] + ":" + fields[4];
