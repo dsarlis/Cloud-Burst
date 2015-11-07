@@ -37,6 +37,7 @@ public class Worker implements Runnable {
 	public Worker(String fileName, TweetsDataStoreService tweetsDataStoreService, Set<Long> uniqueTweetIds, AtomicInteger counter, String pathToFile) {
 		this.fileName = fileName;
 		this.tweetsDataStoreService = tweetsDataStoreService;
+		this.uniqueTweetIds = uniqueTweetIds;
 		this.counter = counter;
 		this.pathToFile = pathToFile;
 	}
@@ -130,7 +131,6 @@ public class Worker implements Runnable {
 			if (tweet != null && !uniqueTweetIds.contains(tweet.getTweetId()) && !isTweetOld(tweet)) {
 				uniqueTweetIds.add(tweet.getTweetId());
 				TextSentimentGrader.addSentimentScore(tweet);
-				TextCensor.censorBannedWords(tweet);
 				fileOutputStream.write(tweet.toString().getBytes());
 			}
 		} catch (JsonSyntaxException ex) {

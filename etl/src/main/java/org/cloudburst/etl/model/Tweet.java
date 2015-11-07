@@ -58,6 +58,10 @@ public class Tweet {
 		return createdAtDate;
 	}
 
+	public void setText(String text) {
+		this.text = text;
+	}
+
 	public String getText() {
 		return text;
 	}
@@ -89,6 +93,7 @@ public class Tweet {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		String separator = "\t";
+		SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		builder.append(StringUtil.join(hashTags, ",", separator));
 		builder.append(separator);
@@ -96,13 +101,13 @@ public class Tweet {
 		builder.append(separator);
 		builder.append(user.getUserId());
 		builder.append(separator);
-		builder.append(createdAt);
+		builder.append(timeStampFormat.format(createdAtDate));
+		builder.append(separator);
+		builder.append(followersCount);
 		builder.append(separator);
 		builder.append(sentimentScore);
 		builder.append(separator);
-		builder.append(getImpactScore());
-		builder.append(separator);
-		builder.append(text.replace("\n", "\\n").replace("\r", "\\r"));
+		builder.append(StringUtil.bytesToHex(text.getBytes()));
 		builder.append("\n");
 		return builder.toString();
 	}

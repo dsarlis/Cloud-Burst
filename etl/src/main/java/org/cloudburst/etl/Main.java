@@ -34,11 +34,12 @@ public class Main {
 		TweetsDataStoreService tweetsDataStoreService = new TweetsDataStoreService(new AWSManager());
 		List<String> tweetFileNames = tweetsDataStoreService.getTweetFileNames();
 		Set<Long> uniqueTweetIds = Collections.newSetFromMap(new ConcurrentHashMap<Long, Boolean>());
+		String pathToFile = args.length > 0 ? args[0] : "!";
 
 		initStructures();
 		for (int chunk = 0; chunk < tweetFileNames.size(); chunk += THREAD_NUMBER) {
 			for (String tweetFileName : tweetFileNames.subList(chunk, chunk + THREAD_NUMBER < tweetFileNames.size() ? chunk + THREAD_NUMBER : tweetFileNames.size())) {
-				Worker worker = new Worker(tweetFileName, tweetsDataStoreService, uniqueTweetIds, counter, args[2]);
+				Worker worker = new Worker(tweetFileName, tweetsDataStoreService, uniqueTweetIds, counter, pathToFile);
 
 				threadPool.execute(worker);
 			}
@@ -58,7 +59,6 @@ public class Main {
 	private static void initStructures() {
 		try {
 			TextSentimentGrader.init();
-			TextCensor.init();
 		} catch (IOException ex) {
 			logger.error("Problem reading text-processing files!", ex);
 		}
