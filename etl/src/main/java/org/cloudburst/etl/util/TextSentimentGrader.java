@@ -1,7 +1,6 @@
 package org.cloudburst.etl.util;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
@@ -18,13 +17,17 @@ public class TextSentimentGrader {
 	private static final String TAB = "\t";
 
 	/* Keeping a MAP at class level. (Size of keySet = 2475) */
-	private final static Map<String, Integer> afinnPool = new ConcurrentHashMap<>();
+	private final static Map<String, Integer> afinnPool = new ConcurrentHashMap<String, Integer>();
 
 	/**
 	 * Populates in-memory needs for text processing.
 	 */
-	public static void init() throws IOException {
-		populateSentimentMap();
+	static {
+		try {
+			populateSentimentMap();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -32,12 +35,12 @@ public class TextSentimentGrader {
 	 * words as labeled by Finn Årup Nielsen in 2009-2011.
 	 */
 	private static void populateSentimentMap() throws IOException {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextSentimentGrader.class.getResourceAsStream(AFINN_FILE_NAME)))) {
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				String[] chunks = line.split(TAB);
-				afinnPool.put(chunks[0], Integer.valueOf(chunks[1]));
-			}
+		BufferedReader reader = new BufferedReader(new InputStreamReader(TextSentimentGrader.class.getResourceAsStream(AFINN_FILE_NAME)));
+		String line = null;
+
+		while ((line = reader.readLine()) != null) {
+			String[] chunks = line.split(TAB);
+			afinnPool.put(chunks[0], Integer.valueOf(chunks[1]));
 		}
 	}
 
