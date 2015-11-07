@@ -34,16 +34,17 @@ public class Main {
 		TweetsDataStoreService tweetsDataStoreService = new TweetsDataStoreService(new AWSManager());
 		List<String> tweetFileNames = tweetsDataStoreService.getTweetFileNames();
 		Set<Long> uniqueTweetIds = Collections.newSetFromMap(new ConcurrentHashMap<Long, Boolean>());
-		String pathToFile = args.length > 0 ? args[0] : "!";
+		String pathToFile = args.length > 0 ? args[0] : "";
 
 		initStructures();
 		for (int chunk = 0; chunk < tweetFileNames.size(); chunk += THREAD_NUMBER) {
-			for (String tweetFileName : tweetFileNames.subList(chunk, chunk + THREAD_NUMBER < tweetFileNames.size() ? chunk + THREAD_NUMBER : tweetFileNames.size())) {
+			int top = chunk + THREAD_NUMBER < tweetFileNames.size() ? chunk + THREAD_NUMBER : tweetFileNames.size();
+			for (String tweetFileName : tweetFileNames.subList(chunk, top)) {
 				Worker worker = new Worker(tweetFileName, tweetsDataStoreService, uniqueTweetIds, counter, pathToFile);
 
 				threadPool.execute(worker);
 			}
-			while (counter.get() < tweetFileNames.size()) {
+			while (counter.get() < top) {
 				logger.info("done {}/{}", counter.get(), tweetFileNames.size());
 				Thread.sleep(TWO_MINUTES);
 			}
