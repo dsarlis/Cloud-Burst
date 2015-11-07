@@ -97,8 +97,6 @@ public class Tweet {
 
 		builder.append(StringUtil.join(hashTags, ",", separator));
 		builder.append(separator);
-		builder.append(tweetId);
-		builder.append(separator);
 		builder.append(user.getUserId());
 		builder.append(separator);
 		builder.append(timeStampFormat.format(createdAtDate));
@@ -108,7 +106,6 @@ public class Tweet {
 		builder.append(sentimentScore);
 		builder.append(separator);
 		builder.append(StringUtil.bytesToHex(text.getBytes()));
-		builder.append("\n");
 		return builder.toString();
 	}
 
