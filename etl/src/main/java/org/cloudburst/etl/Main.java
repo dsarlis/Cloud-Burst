@@ -23,8 +23,8 @@ import org.cloudburst.etl.util.*;
  */
 public class Main {
 
-	private static final String OLD_TWEETS_DATE_STR = "Wed Apr 20 00:00:00 +0000 2014 Sun";
-	private static final String DATE_TIME_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
+	private static final String OLD_TWEETS_DATE_STR = "Sun Apr 20 00:00:00 +0000 2014";
+	private static final String DATE_TIME_FORMAT = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
 	private static final String TIME_ZONE_UTC_GMT = "GMT";
 
 	private static Date oldTweetsDate;
@@ -80,7 +80,7 @@ public class Main {
 	}
 
 	public static Date toUTCDate(String dateStr) throws ParseException {
-		SimpleDateFormat format = new SimpleDateFormat(DATE_TIME_FORMAT);
+		SimpleDateFormat format = new SimpleDateFormat(DATE_TIME_FORMAT, Locale.ENGLISH);
 
 		format.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_UTC_GMT));
 		return format.parse(dateStr);
