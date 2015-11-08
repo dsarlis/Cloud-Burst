@@ -1,5 +1,7 @@
 package org.cloudburst.hbase;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.KeyValue;
@@ -31,7 +33,13 @@ public class HBaseLoader {
             String[] fields = line.split(TAB);
 
             String outputKey = fields[1]+ "_" + fields[2];
-            String outputValue = fields[0] + ":" + fields[3] + ":" + fields[4];
+            String outputValue = null;
+            try {
+                outputValue = fields[0] + ":" + fields[3] + ":" +
+                        new String(Hex.decodeHex(fields[4].toCharArray()), "UTF-8");
+            } catch (DecoderException e) {
+                e.printStackTrace();
+            }
             context.write(new Text(outputKey), new Text(outputValue));
             value.clear();
         }
