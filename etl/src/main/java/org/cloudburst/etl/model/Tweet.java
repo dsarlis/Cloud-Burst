@@ -1,5 +1,6 @@
 package org.cloudburst.etl.model;
 
+import org.cloudburst.etl.Main;
 import org.cloudburst.etl.util.StringUtil;
 
 import java.text.ParseException;
@@ -13,8 +14,6 @@ import java.util.TimeZone;
  */
 public class Tweet {
 
-	private static final String DATE_TIME_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
-	private static final String TIME_ZONE_UTC_GMT = "GMT";
 
 	private long tweetId;
 
@@ -53,7 +52,7 @@ public class Tweet {
 
 	public Date getCreationTime() throws ParseException {
 		if (createdAtDate == null) {
-			createdAtDate = toUTCDate(createdAt);
+			createdAtDate = Main.toUTCDate(createdAt);
 		}
 		return createdAtDate;
 	}
@@ -76,13 +75,6 @@ public class Tweet {
 
 	public void adjustScore(int sentimentScore) {
 		this.sentimentScore += sentimentScore;
-	}
-
-	private Date toUTCDate(String createdAt) throws ParseException {
-		SimpleDateFormat format = new SimpleDateFormat(DATE_TIME_FORMAT);
-
-		format.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_UTC_GMT));
-		return format.parse(createdAt);
 	}
 
 	public int getImpactScore() {

@@ -2,6 +2,7 @@ package org.cloudburst.etl;
 
 import java.io.*;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.google.gson.*;
@@ -16,13 +17,17 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 import org.cloudburst.etl.model.Tweet;
 import org.cloudburst.etl.util.*;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 /**
  * Main class to process tweets and insert them into MySQL and create an output file.
  */
 public class Main {
+
+	private static final String OLD_TWEETS_DATE_STR = "Sun, 20 Apr 2014 00:00:00 GMT";
+	private static final String DATE_TIME_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
+	private static final String TIME_ZONE_UTC_GMT = "GMT";
+
+	private static Date oldTweetsDate;
 
 	public static class Map extends Mapper<LongWritable, Text, Text, Text> {
 
@@ -74,6 +79,13 @@ public class Main {
 		job.waitForCompletion(true);
 	}
 
+	public static Date toUTCDate(String dateStr) throws ParseException {
+		SimpleDateFormat format = new SimpleDateFormat(DATE_TIME_FORMAT);
+
+		format.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_UTC_GMT));
+		return format.parse(dateStr);
+	}
+
 	/**
 	 * Read json tweet.
 	 */
@@ -98,13 +110,20 @@ public class Main {
 		}
 	}
 
+	private static Date getOldTweetsDate() {
+		if (oldTweetsDate == null) {
+			try {
+				oldTweetsDate = toUTCDate(OLD_TWEETS_DATE_STR);
+			} catch (ParseException e) {}
+		}
+		return oldTweetsDate;
+	}
+
 	/**
 	 * Ignore all tweets that have a time stamp prior to Sun, 20 Apr 2014
 	 */
 	private static boolean isTweetOld(Tweet tweet) throws ParseException {
-		DateTime dateTime = new DateTime(2014, 4, 20, 0, 0, 0, 0, DateTimeZone.UTC);
-
-		return tweet.getCreationTime().before(dateTime.toDate());
+		return tweet.getCreationTime().before(getOldTweetsDate());
 	}
 
 	/**
