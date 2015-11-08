@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cmu</groupId>
-    <artifactId>burst-cmu-hbase</artifactId>
+    <artifactId>hbase</artifactId>
     <version>1.0</version>
 
     <dependencies>
@@ -47,22 +47,42 @@
         <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
             <configuration>
-                <archive>
-                    <manifest>
-                        <mainClass>org.cloudburst.hbase.HBaseLoader</mainClass>
-                    </manifest>
-                </archive>
+                <finalName>hbaseLoaders</finalName>
+                <appendAssemblyId>false</appendAssemblyId>
                 <descriptorRefs>
                     <descriptorRef>jar-with-dependencies</descriptorRef>
                 </descriptorRefs>
             </configuration>
             <executions>
                 <execution>
-                    <id>make-assembly</id> <!-- this is used for inheritance merges -->
-                    <phase>package</phase> <!-- bind to the packaging phase -->
+                    <id>Q2Loader</id>
+                    <phase>package</phase>
                     <goals>
                         <goal>single</goal>
                     </goals>
+                    <configuration>
+                        <finalName>Q2Loader</finalName>
+                        <archive>
+                            <manifest>
+                                <mainClass>org.cloudburst.hbase.Q2Loader</mainClass>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>Q3Loader</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                    <configuration>
+                        <finalName>Q3Loader</finalName>
+                        <archive>
+                            <manifest>
+                                <mainClass>org.cloudburst.hbase.Q3Loader</mainClass>
+                            </manifest>
+                        </archive>
+                    </configuration>
                 </execution>
             </executions>
         </plugin>

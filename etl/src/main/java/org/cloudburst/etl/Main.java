@@ -132,5 +132,4 @@ public class Main {
 	private static JsonElement throwExceptionForMalformedTweets(String line) throws JsonSyntaxException {
 		return new JsonParser().parse(line);
 	}
-
 }

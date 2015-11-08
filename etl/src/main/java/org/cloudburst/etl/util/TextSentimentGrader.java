@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.cloudburst.etl.model.Tweet;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 public class TextSentimentGrader {
 
@@ -59,6 +61,11 @@ public class TextSentimentGrader {
 				}
 			}
 		}
+	}
+
+	public static void main(String[] args) {
+		DateTime dateTime = new DateTime(2014, 4, 20, 0, 0, 0, 0, DateTimeZone.UTC);
+		System.out.println(dateTime.toDate());
 	}
 
 }
