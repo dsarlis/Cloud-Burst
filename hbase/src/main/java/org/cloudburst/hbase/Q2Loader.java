@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class HBaseLoader {
-    private static final String TABLE_NAME = "q2";
+public class Q2Loader {
+    private static final String TABLE_NAME = "tweets";
     private static final String TAB = "\t";
 
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
@@ -78,7 +78,7 @@ public class HBaseLoader {
 
         Job job = new Job(conf);
 
-        job.setJarByClass(HBaseLoader.class);
+        job.setJarByClass(Q2Loader.class);
         job.setOutputKeyClass(ImmutableBytesWritable.class);
         job.setOutputValueClass(KeyValue.class);
         job.setMapOutputKeyClass(Text.class);
