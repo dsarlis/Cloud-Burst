@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 
 import org.cloudburst.server.util.MySQLConnectionFactory;
+import org.cloudburst.server.util.TextCensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,8 @@ public class MySQLService {
 			while (rs.next()) {
 				builder.append(rs.getLong("tweetId")).append(COLON);
 				builder.append(rs.getInt("score")).append(COLON);
-				builder.append(new String(rs.getBytes("text"), StandardCharsets.UTF_8).replace(";", "\n"));
+				builder.append(TextCensor.censorBannedWords(new
+						String(rs.getBytes("text"), StandardCharsets.UTF_8)).replace(";", "\n"));
 				builder.append(NEW_LINE);
 			}
 		} catch (SQLException ex) {
