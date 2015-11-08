@@ -23,7 +23,7 @@ import org.cloudburst.etl.util.*;
  */
 public class Main {
 
-	private static final String OLD_TWEETS_DATE_STR = "Sun, 20 Apr 2014 00:00:00 GMT";
+	private static final String OLD_TWEETS_DATE_STR = "Wed Apr 20 00:00:00 +0000 2014 Sun";
 	private static final String DATE_TIME_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
 	private static final String TIME_ZONE_UTC_GMT = "GMT";
 
