@@ -20,8 +20,8 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Q3Loader {
-    private static final String TABLE_NAME = "impact";
+public class Q4Loader {
+    private static final String TABLE_NAME = "hashtags";
     private static final String TAB = "\t";
     private static final String SPACE = " ";
     private static final String COMMA = ",";
@@ -50,36 +50,10 @@ public class Q3Loader {
         public void reduce(Text key, Iterable<Text> values, Context context)
                 throws IOException, InterruptedException {
             hkey = new ImmutableBytesWritable();
-            ArrayList<String> posImpacts = new ArrayList<>();
-            ArrayList<String> negImpacts = new ArrayList<>();
-            for (Text t: values) {
-                String value = t.toString();
-                String[] parts = value.split(COMMA);
-                int impactScore = Integer.parseInt(parts[1]);
-                if (impactScore > 0) {
-                    posImpacts.add(value);
-                } else {
-                    negImpacts.add(value);
-                }
-            }
-
-            StringBuilder posOutputValue = new StringBuilder();
-            StringBuilder negOutputValue = new StringBuilder();
-
-            for (String p: posImpacts) {
-                posOutputValue.append(p).append(TAB);
-            }
-
-            for (String n: negImpacts) {
-                negOutputValue.append(n).append(TAB);
-            }
             // write key value pairs to HFile
             hkey.set(key.getBytes());
             KeyValue kv = new KeyValue(hkey.get(), Bytes.toBytes("data"), Bytes.toBytes("pos"),
-                    Bytes.toBytes(posOutputValue.toString()));
-            context.write(hkey, kv);
-            kv = new KeyValue(hkey.get(), Bytes.toBytes("data"), Bytes.toBytes("neg"),
-                    Bytes.toBytes(negOutputValue.toString()));
+                    Bytes.toBytes(""));
             context.write(hkey, kv);
         }
     }
@@ -90,7 +64,7 @@ public class Q3Loader {
 
         Job job = new Job(conf);
 
-        job.setJarByClass(Q3Loader.class);
+        job.setJarByClass(Q4Loader.class);
         job.setOutputKeyClass(ImmutableBytesWritable.class);
         job.setOutputValueClass(KeyValue.class);
         job.setMapOutputKeyClass(Text.class);
@@ -109,6 +83,6 @@ public class Q3Loader {
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
         job.waitForCompletion(true);
-
     }
 }
+

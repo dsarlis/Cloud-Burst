@@ -84,6 +84,21 @@
                         </archive>
                     </configuration>
                 </execution>
+                <execution>
+                    <id>Q4Loader</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                    <configuration>
+                        <finalName>Q4Loader</finalName>
+                        <archive>
+                            <manifest>
+                                <mainClass>org.cloudburst.hbase.Q4Loader</mainClass>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </execution>
             </executions>
         </plugin>
     </plugins>
