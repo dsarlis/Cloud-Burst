@@ -105,11 +105,7 @@ public class Q3 {
             }
         }
     }
-    /**
-     * Main method. It will process all tweet files, read them, insert them into MySQL and create and output file.
-     * It can be done in parts:
-     * First argument is from, second to, and third the file prefix.
-     */
+
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Configuration conf = new Configuration();
         Job job = new Job(conf, "q3");

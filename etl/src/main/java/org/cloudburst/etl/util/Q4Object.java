@@ -27,6 +27,9 @@ public class Q4Object implements Comparable {
 
     @Override
     public int compareTo(Object o) {
+        if (this.createdAt.compareTo(((Q4Object) o).getCreatedAt()) == 0) {
+            return this.text.compareTo(((Q4Object) o).getText());
+        }
         return this.createdAt.compareTo(((Q4Object) o).getCreatedAt());
     }
 }

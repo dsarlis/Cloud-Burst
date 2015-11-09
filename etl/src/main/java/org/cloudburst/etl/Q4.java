@@ -5,7 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import com.google.gson.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.conf.*;
@@ -22,6 +23,7 @@ import org.cloudburst.etl.util.*;
 public class Q4 {
     private static final String TAB = "\t";
     private static final String UNDERSCORE = "_";
+    private static final String COMMA = ",";
 
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
 
@@ -58,10 +60,10 @@ public class Q4 {
                 throws IOException, InterruptedException {
 
             String[] keyParts = key.toString().split(UNDERSCORE);
-
             long finalCount = 0;
             HashSet<Long> usersList = new HashSet<Long>();
             ArrayList<Q4Object> q4 = new ArrayList<Q4Object>();
+
             for (Text value : values) {
                 String[] parts = value.toString().split(UNDERSCORE);
                 finalCount += Long.parseLong(parts[0]);
@@ -75,16 +77,12 @@ public class Q4 {
             StringBuilder outputValue = new StringBuilder();
             outputValue.append(keyParts[1]).append(TAB);
             outputValue.append(finalCount).append(TAB);
-            outputValue.append(uniqueUsersList).append(TAB);
+            outputValue.append(StringUtil.joinArray(uniqueUsersList, COMMA)).append(TAB);
             outputValue.append(q4.get(0).getText());
             context.write(new Text(keyParts[0]), new Text(outputValue.toString()));
         }
     }
-    /**
-     * Main method. It will process all tweet files, read them, insert them into MySQL and create and output file.
-     * It can be done in parts:
-     * First argument is from, second to, and third the file prefix.
-     */
+
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Configuration conf = new Configuration();
         Job job = new Job(conf, "q4");

@@ -1,5 +1,6 @@
 package org.cloudburst.etl.util;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,5 +41,21 @@ public class StringUtil {
         keysBuilder.append(outerSeparator).append(valuesBuilder);
         return keysBuilder.toString();
     }
+
+    public static <T> String joinArray(List<T> list, String separator) {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+
+        for (T element: list) {
+            if (first) {
+                first = false;
+            } else {
+                result.append(separator);
+            }
+            result.append(element);
+        }
+        return result.toString();
+    }
+
 
 }
