@@ -46,8 +46,8 @@ public class TextSentimentGrader {
 	 * Calculates the total sentiment score for a tweet.
 	 */
 	public static void addSentimentScore(Tweet tweet) throws IOException {
-
 		String[] chunks = REGEX_NON_ALPHA_NUM.split(tweet.getText());
+
 		for (String textChunk : chunks) {
 			if (!textChunk.isEmpty()) {
 				String key = textChunk.toLowerCase();

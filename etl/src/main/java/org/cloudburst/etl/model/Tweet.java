@@ -87,6 +87,7 @@ public class Tweet {
 		String separator = "\t";
 		SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+		timeStampFormat.setTimeZone(TimeZone.getTimeZone(Main.TIME_ZONE_UTC_GMT));
 		builder.append(StringUtil.join(hashTags, ",", separator));
 		builder.append(separator);
 		builder.append(user.getUserId());

@@ -23,25 +23,27 @@ import org.cloudburst.etl.util.*;
  */
 public class Main {
 
+	public static final String TIME_ZONE_UTC_GMT = "+0000";
+
 	private static final String OLD_TWEETS_DATE_STR = "Sun Apr 20 00:00:00 +0000 2014";
 	private static final String DATE_TIME_FORMAT = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
-	private static final String TIME_ZONE_UTC_GMT = "GMT";
 
 	private static Date oldTweetsDate;
 
 	public static class Map extends Mapper<LongWritable, Text, Text, Text> {
 
 		public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-			String line = value.toString();
-			JsonElement jsonElement = throwExceptionForMalformedTweets(line);
-			Tweet tweet = generateTweet(jsonElement);
-
 			try {
+				String line = value.toString();
+				JsonElement jsonElement = throwExceptionForMalformedTweets(line);
+				Tweet tweet = generateTweet(jsonElement);
+
 				if (tweet != null && !isTweetOld(tweet)) {
-                    TextSentimentGrader.addSentimentScore(tweet);
+					TextSentimentGrader.addSentimentScore(tweet);
 					context.write(new Text(tweet.getTweetId() + ""), new Text(tweet.toString()));
 				}
-			} catch (ParseException e) {}
+			} catch (ParseException e) {
+			} catch (JsonSyntaxException e) {}
 		}
 	}
 
@@ -90,21 +92,27 @@ public class Main {
 	 * Read json tweet.
 	 */
 	private static Tweet generateTweet(JsonElement jsonElement)  {
-		JsonObject jsonObject = jsonElement.getAsJsonObject();
-
 		try {
-			JsonObject userObject = jsonObject.getAsJsonObject("user");
-			JsonArray hashTagsArray = jsonObject.getAsJsonObject("entities").get("hashtags").getAsJsonArray();
+			JsonObject tweetObject = jsonElement.getAsJsonObject();
+			JsonObject userObject = tweetObject.getAsJsonObject("user");
 			java.util.Map<String, Integer> hashTags = new HashMap<String, Integer>();
 
-			for (JsonElement hashTag : hashTagsArray) {
-				String text = hashTag.getAsJsonObject().get("text").getAsString();
-				Integer count = hashTags.get(text);
+			if (tweetObject.has("entities")) {
+				JsonObject entitiesObject = tweetObject.get("entities").getAsJsonObject();
 
-				hashTags.put(text, count != null ? count + 1 : 1);
+				if (entitiesObject.has("hashtags")) {
+					JsonArray hashTagsArray = entitiesObject.get("hashtags").getAsJsonArray();
+
+					for (JsonElement hashTag : hashTagsArray) {
+						String text = hashTag.getAsJsonObject().get("text").getAsString();
+						Integer count = hashTags.get(text);
+
+						hashTags.put(text, count != null ? count + 1 : 1);
+					}
+				}
 			}
 
-			return new Tweet(jsonObject.get("id").getAsLong(), userObject.get("id").getAsLong(), userObject.get("followers_count").getAsInt(), jsonObject.get("created_at").getAsString(), jsonObject.get("text").getAsString(), hashTags);
+			return new Tweet(tweetObject.get("id").getAsLong(), userObject.get("id").getAsLong(), userObject.get("followers_count").getAsInt(), tweetObject.get("created_at").getAsString(), tweetObject.get("text").getAsString(), hashTags);
 		} catch (Throwable ex) {
 			return null;
 		}
