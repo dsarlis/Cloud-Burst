@@ -2,6 +2,7 @@ package org.cloudburst.etl.model;
 
 import org.cloudburst.etl.Main;
 import org.cloudburst.etl.util.StringUtil;
+import org.cloudburst.etl.util.TweetUtil;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -52,9 +53,13 @@ public class Tweet {
 
 	public Date getCreationTime() throws ParseException {
 		if (createdAtDate == null) {
-			createdAtDate = Main.toUTCDate(createdAt);
+			createdAtDate = TweetUtil.toUTCDate(createdAt);
 		}
 		return createdAtDate;
+	}
+
+	public User getUser() {
+		return user;
 	}
 
 	public void setText(String text) {
@@ -81,13 +86,21 @@ public class Tweet {
 		return sentimentScore * (1 + followersCount);
 	}
 
+	public Map<String, Integer> getHashTags() {
+		return hashTags;
+	}
+
+	public void setHashTags(Map<String, Integer> hashTags) {
+		this.hashTags = hashTags;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		String separator = "\t";
 		SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-		timeStampFormat.setTimeZone(TimeZone.getTimeZone(Main.TIME_ZONE_UTC_GMT));
+		timeStampFormat.setTimeZone(TimeZone.getTimeZone(TweetUtil.TIME_ZONE_UTC_GMT));
 		builder.append(StringUtil.join(hashTags, ",", separator));
 		builder.append(separator);
 		builder.append(user.getUserId());

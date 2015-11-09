@@ -1,4 +1,4 @@
-package org.cloudburst.server.util;
+package org.cloudburst.etl.util;
 
 import java.io.*;
 import java.util.Collections;
@@ -33,13 +33,16 @@ public class TextCensor {
      * TEXT-CENSORING : Reads the files that contains ROT-13 version of all
      * banned words.
      */
-    private static void populateBannedSetOfWords() throws IOException, FileNotFoundException {
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(TextCensor.class.getResourceAsStream(BANNED_LIST_FILE_NAME)))) {
+    private static void populateBannedSetOfWords() throws IOException {
+        try {
+            BufferedReader reader = new BufferedReader(
+                new InputStreamReader(TextCensor.class.getResourceAsStream(BANNED_LIST_FILE_NAME)));
             String line = null;
             while ((line = reader.readLine()) != null) {
                 bannedSetOfWords.add(getROT13DecryptedWord(line.trim()).toLowerCase());
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -99,3 +102,4 @@ public class TextCensor {
         return censoredContent.toString();
     }
 }
+
