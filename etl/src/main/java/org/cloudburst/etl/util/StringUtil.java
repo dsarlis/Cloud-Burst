@@ -1,6 +1,5 @@
 package org.cloudburst.etl.util;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**

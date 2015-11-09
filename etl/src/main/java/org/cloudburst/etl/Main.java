@@ -25,7 +25,7 @@ public class Main {
 
 	public static final String TIME_ZONE_UTC_GMT = "+0000";
 
-	private static final String OLD_TWEETS_DATE_STR = "Sun Apr 20 00:00:00 +0000 2014";
+	private static final String OLD_TWEETS_DATE_STR = "Fri Apr 18 00:00:00 +0000 2014";
 	private static final String DATE_TIME_FORMAT = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
 
 	private static Date oldTweetsDate;
