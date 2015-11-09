@@ -53,6 +53,7 @@ public class Q2Servlet extends HttpServlet {
 		StringBuilder finalMessage = new StringBuilder(FIRST_LINE);
 		finalMessage.append(mySQLService.getTweetResult(userId, creationTime));
 
+		response.setHeader("Content-Type", "text/plain; charset=UTF-8");
 		response.getOutputStream().write(finalMessage.toString().getBytes());
 	}
 
