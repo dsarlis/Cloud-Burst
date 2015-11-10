@@ -79,6 +79,7 @@ public class Q3 {
 
             int count = 0;
             for (Q3Object p: posTweets) {
+                count++;
                 if (count > 10) {
                     break;
                 }
@@ -87,11 +88,11 @@ public class Q3 {
                 outputValue.append(p.getImpactScore()).append(TAB);
                 outputValue.append(p.getTweetId()).append(TAB);
                 outputValue.append(p.getText()).append(TAB);
-                count++;
                 context.write(new Text(keyParts[0]), new Text(outputValue.toString()));
             }
             count = 0;
             for (Q3Object n: negTweets) {
+                count++;
                 if (count > 10) {
                     break;
                 }
@@ -100,7 +101,6 @@ public class Q3 {
                 outputValue.append(n.getImpactScore()).append(TAB);
                 outputValue.append(n.getTweetId()).append(TAB);
                 outputValue.append(n.getText()).append(TAB);
-                count++;
                 context.write(new Text(keyParts[0]), new Text(outputValue.toString()));
             }
         }
