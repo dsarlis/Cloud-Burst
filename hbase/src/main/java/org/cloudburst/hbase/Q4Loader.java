@@ -1,5 +1,7 @@
 package org.cloudburst.hbase;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.KeyValue;
@@ -15,31 +17,29 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.cloudburst.util.Q4Object;
 
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class Q4Loader {
     private static final String TABLE_NAME = "hashtags";
     private static final String TAB = "\t";
-    private static final String SPACE = " ";
-    private static final String COMMA = ",";
+    private static final String UNDERSCORE = "_";
+    private static final String COLON = ":";
 
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            /* Format of a line: tweetId\tuserId\tcreationTime\tfollowers\tscore\ttext*/
+            /* Format of a line: hashtag \t date \t count \t userList \t earliest_tweet*/
             String line = value.toString();
             String[] fields = line.split(TAB);
-            if (Integer.parseInt(fields[4]) != 0) {
-                String[] dateParts = fields[2].split(SPACE);
 
-                String outputKey = fields[1] + "_" + dateParts[0];
-                String outputValue = null;
-                int impactScore = Integer.parseInt(fields[4]) * (1 + Integer.parseInt(fields[3]));
-                outputValue = dateParts[0] + COMMA + impactScore + COMMA + fields[0] + COMMA + fields[5];
-                context.write(new Text(outputKey), new Text(outputValue));
-            }
+            String outputKey = fields[0];
+            String outputValue = fields[1] + COLON + fields[2] + COLON + fields[3] + COLON + fields[4];
+            context.write(new Text(outputKey), new Text(outputValue));
             value.clear();
         }
     }
@@ -49,12 +49,28 @@ public class Q4Loader {
 
         public void reduce(Text key, Iterable<Text> values, Context context)
                 throws IOException, InterruptedException {
-            hkey = new ImmutableBytesWritable();
-            // write key value pairs to HFile
-            hkey.set(key.getBytes());
-            KeyValue kv = new KeyValue(hkey.get(), Bytes.toBytes("data"), Bytes.toBytes("pos"),
-                    Bytes.toBytes(""));
-            context.write(hkey, kv);
+            ArrayList<Q4Object> q4 = new ArrayList<>();
+            for (Text value: values) {
+                String[] parts = value.toString().split(COLON);
+                q4.add(new Q4Object(parts[1], parts[2], parts[3], parts[4]));
+            }
+
+            Collections.sort(q4);
+
+            for (Q4Object q: q4) {
+                hkey = new ImmutableBytesWritable();
+                // write key value pairs to HFile
+                try {
+                    hkey.set(new String(Hex.decodeHex(key.toString().toCharArray()), "UTF-8").getBytes("UTF-8"));
+                    String outputValue = q.getDate() + COLON + q.getCount() + COLON + q.getUserList() + COLON +
+                            new String(Hex.decodeHex(q.getText().toCharArray()), "UTF-8");
+                    KeyValue kv = new KeyValue(hkey.get(), Bytes.toBytes("data"), Bytes.toBytes("value"),
+                            Bytes.toBytes(outputValue));
+                    context.write(hkey, kv);
+                } catch (DecoderException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
