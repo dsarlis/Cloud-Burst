@@ -56,16 +56,20 @@ public class Q4Loader {
 
             Collections.sort(q4);
 
+            int id = 0;
             for (Q4Object q: q4) {
                 hkey = new ImmutableBytesWritable();
                 // write key value pairs to HFile
                 try {
-                    hkey.set(new String(Hex.decodeHex(key.toString().toCharArray()), "UTF-8").getBytes("UTF-8"));
+                    String outputKey = new String(Hex.decodeHex(key.toString().toCharArray()), "UTF-8")
+                            + COLON + q.getDate() + id;
+                    hkey.set(outputKey.getBytes("UTF-8"));
                     String outputValue = q.getDate() + COLON + q.getCount() + COLON + q.getUserList() + COLON +
                             new String(Hex.decodeHex(q.getText().toCharArray()), "UTF-8");
                     KeyValue kv = new KeyValue(hkey.get(), Bytes.toBytes("data"), Bytes.toBytes("value"),
                             Bytes.toBytes(outputValue));
                     context.write(hkey, kv);
+                    id++;
                 } catch (DecoderException e) {
                     e.printStackTrace();
                 }
