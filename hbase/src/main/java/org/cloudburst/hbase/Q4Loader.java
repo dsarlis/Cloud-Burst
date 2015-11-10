@@ -62,7 +62,7 @@ public class Q4Loader {
                 // write key value pairs to HFile
                 try {
                     String outputKey = new String(Hex.decodeHex(key.toString().toCharArray()), "UTF-8")
-                            + COLON + q.getDate() + id;
+                            + COLON + id;
                     hkey.set(outputKey.getBytes("UTF-8"));
                     String outputValue = q.getDate() + COLON + q.getCount() + COLON + q.getUserList() + COLON +
                             new String(Hex.decodeHex(q.getText().toCharArray()), "UTF-8");
