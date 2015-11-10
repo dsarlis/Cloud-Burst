@@ -10,9 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Q2HBaseServlet extends HttpServlet {
+    private static final int THREAD_POOL_SIZE = 100;
     private HBaseService hbaseService = new HBaseService(new HBaseConnectionFactory());
+    private ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     private static String FIRST_LINE;
 
@@ -40,16 +44,25 @@ public class Q2HBaseServlet extends HttpServlet {
 
     @Override
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException {
 
-        long userId = Long.valueOf(request.getParameter("userid"));
-        String creationTime = request.getParameter("tweet_time");
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                long userId = Long.valueOf(request.getParameter("userid"));
+                String creationTime = request.getParameter("tweet_time");
 
-        StringBuilder finalMessage = new StringBuilder(FIRST_LINE);
-        finalMessage.append(hbaseService.getRecord(userId+ "_" + creationTime));
+                StringBuilder finalMessage = new StringBuilder(FIRST_LINE);
+                finalMessage.append(hbaseService.getRecord(userId + "_" + creationTime));
 
-        response.setHeader("Content-Type", "text/plain; charset=UTF-8");
-        response.getOutputStream().write(finalMessage.toString().getBytes());
+                response.setHeader("Content-Type", "text/plain; charset=UTF-8");
+                try {
+                    response.getOutputStream().write(finalMessage.toString().getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 }

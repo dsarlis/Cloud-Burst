@@ -24,7 +24,7 @@ public class HBaseService {
     public String getRecord(String rowKey) {
         HTableInterface table = null;
         try {
-            table = factory.getConnection().getTable(Bytes.toBytes(TABLE));
+            table = factory.getConnection().getTable(TABLE);
             Get get = new Get(Bytes.toBytes(rowKey));
             Result result = null;
             try {
