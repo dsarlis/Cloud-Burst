@@ -43,8 +43,8 @@ public class Q4 {
                         outputValue.append(hashtags.get(hashtag).intValue()).append(UNDERSCORE);
                         outputValue.append(tweet.getUser().getUserId()).append(UNDERSCORE);
                         outputValue.append(tweet.getCreationTime()).append(UNDERSCORE);
-                        outputValue.append(Hex.encodeHex(tweet.getText().getBytes("UTF-8")));
-                        context.write(new Text(Hex.encodeHex(hashtag.getBytes("UTF-8")) + UNDERSCORE + date),
+                        outputValue.append(Hex.encodeHexString(tweet.getText().getBytes("UTF-8")));
+                        context.write(new Text(Hex.encodeHexString(hashtag.getBytes("UTF-8")) + UNDERSCORE + date),
                                 new Text(outputValue.toString()));
                     }
                 }
