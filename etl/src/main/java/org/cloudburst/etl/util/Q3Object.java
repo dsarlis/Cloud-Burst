@@ -37,6 +37,6 @@ public class Q3Object implements Comparable {
 
     @Override
     public int compareTo(Object o) {
-        return this.impactScore.compareTo(((Q3Object) o).getImpactScore());
+        return -1 * this.impactScore.compareTo(((Q3Object) o).getImpactScore());
     }
 }

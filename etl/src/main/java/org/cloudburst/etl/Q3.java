@@ -39,10 +39,11 @@ public class Q3 {
                         StringBuilder outputValue = new StringBuilder();
                         outputValue.append(tweet.getImpactScore()).append(UNDERSCORE);
                         outputValue.append(tweet.getTweetId()).append(UNDERSCORE);
-                        outputValue.append(Hex.encodeHex(TextCensor.censorBannedWords(tweet.getText()).getBytes("UTF-8")));
+                        String censoredText = TextCensor.censorBannedWords(tweet.getText());
+                        outputValue.append(Hex.encodeHex(censoredText.getBytes("UTF-8")));
                         String date = format.format(Date.parse(String.valueOf(tweet.getCreationTime())));
                         context.write(new Text(tweet.getUser().getUserId() + UNDERSCORE + date),
-                                new Text(tweet.toString()));
+                                new Text(outputValue.toString()));
                     }
                 }
             } catch (JsonSyntaxException e) {
@@ -75,7 +76,7 @@ public class Q3 {
             }
 
             Collections.sort(posTweets);
-            Collections.sort(negTweets, Collections.reverseOrder());
+            Collections.sort(negTweets);
 
             int count = 0;
             for (Q3Object p: posTweets) {
