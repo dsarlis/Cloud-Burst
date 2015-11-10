@@ -1,5 +1,9 @@
 package org.cloudburst.hbase;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.hadoop.conf.Configuration;
@@ -18,11 +22,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-
 public class Q2Loader {
     private static final String TABLE_NAME = "tweets";
     private static final String TAB = "\t";
@@ -32,11 +31,14 @@ public class Q2Loader {
             String line = value.toString();
             String[] fields = line.split(TAB);
 
-            String outputKey = fields[1]+ "_" + fields[2];
+            /* Key { userId_createdAtDate } */
+            String outputKey = fields[2] + "_" + fields[3];
+
             String outputValue = null;
             try {
-                outputValue = fields[0] + ":" + fields[3] + ":" +
-                        new String(Hex.decodeHex(fields[4].toCharArray()), "UTF-8");
+                /* Value { tweetId : sentimentScore : text } */
+                outputValue = fields[0] + ":" + fields[5] + ":"
+                        + new String(Hex.decodeHex(fields[6].toCharArray()), "UTF-8");
             } catch (DecoderException e) {
                 e.printStackTrace();
             }
@@ -48,19 +50,18 @@ public class Q2Loader {
     public static class Reduce extends Reducer<Text, Text, ImmutableBytesWritable, KeyValue> {
         private ImmutableBytesWritable hkey;
 
-        public void reduce(Text key, Iterable<Text> values, Context context)
-                throws IOException, InterruptedException {
+        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             hkey = new ImmutableBytesWritable();
             StringBuilder outputValue = new StringBuilder();
             HashMap<String, String> tweetMap = new HashMap<>();
-            for (Text value: values) {
+            for (Text value : values) {
                 String[] fields = value.toString().split(":");
                 tweetMap.put(fields[0], value.toString());
             }
             // sort by tweet ID and then append to output with "\n"
             Object[] keys = tweetMap.keySet().toArray();
             Arrays.sort(keys);
-            for (Object k: keys) {
+            for (Object k : keys) {
                 outputValue.append(tweetMap.get(k));
                 outputValue.append("\n");
             }
@@ -100,4 +101,3 @@ public class Q2Loader {
 
     }
 }
-
