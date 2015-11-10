@@ -40,7 +40,7 @@ public class Q3 {
                         outputValue.append(tweet.getImpactScore()).append(UNDERSCORE);
                         outputValue.append(tweet.getTweetId()).append(UNDERSCORE);
                         String censoredText = TextCensor.censorBannedWords(tweet.getText());
-                        outputValue.append(Hex.encodeHex(censoredText.getBytes("UTF-8")));
+                        outputValue.append(Hex.encodeHexString(censoredText.getBytes("UTF-8")));
                         String date = format.format(Date.parse(String.valueOf(tweet.getCreationTime())));
                         context.write(new Text(tweet.getUser().getUserId() + UNDERSCORE + date),
                                 new Text(outputValue.toString()));
