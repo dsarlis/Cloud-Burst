@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.google.gson.*;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.io.*;
@@ -27,18 +29,24 @@ public class Main {
 		public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 			try {
 				String line = value.toString();
-				JsonElement jsonElement = TweetUtil.throwExceptionForMalformedTweets(line);
-				Tweet tweet = TweetUtil.generateTweet(jsonElement);
 
-				if (tweet != null && !TweetUtil.isTweetOld(tweet)) {
-					TextSentimentGrader.addSentimentScore(tweet);
-					String censoredText = TextCensor.censorBannedWords(tweet.getText());
+				String[] tokens = line.split("\t");
+				StringBuilder builder = new StringBuilder();
+				String tweetId = tokens[0];
 
-					tweet.setText(censoredText);
-					context.write(new Text(tweet.getTweetId() + ""), new Text(tweet.toString()));
-				}
-			} catch (ParseException e) {
+				builder.append(",");
+				builder.append(tokens[3]);
+				builder.append(",");
+				builder.append(tokens[4]);
+				builder.append(",");
+				builder.append(tokens[6]);
+				builder.append(",");
+				String censored = TextCensor.censorBannedWords(new String(Hex.decodeHex(tokens[7].toCharArray())));
+				builder.append(StringUtil.bytesToHex(censored.getBytes()));
+
+				context.write(new Text(tweetId), new Text(builder.toString()));
 			} catch (JsonSyntaxException e) {}
+			catch (DecoderException e) {}
 		}
 	}
 
