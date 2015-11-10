@@ -101,13 +101,10 @@ public class Tweet {
 		SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		timeStampFormat.setTimeZone(TimeZone.getTimeZone(TweetUtil.TIME_ZONE_UTC_GMT));
-		builder.append(StringUtil.join(hashTags, ",", separator));
 		builder.append(separator);
 		builder.append(user.getUserId());
 		builder.append(separator);
 		builder.append(timeStampFormat.format(createdAtDate));
-		builder.append(separator);
-		builder.append(followersCount);
 		builder.append(separator);
 		builder.append(sentimentScore);
 		builder.append(separator);

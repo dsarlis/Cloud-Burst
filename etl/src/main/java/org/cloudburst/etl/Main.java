@@ -32,6 +32,9 @@ public class Main {
 
 				if (tweet != null && !TweetUtil.isTweetOld(tweet)) {
 					TextSentimentGrader.addSentimentScore(tweet);
+					String censoredText = TextCensor.censorBannedWords(tweet.getText());
+
+					tweet.setText(censoredText);
 					context.write(new Text(tweet.getTweetId() + ""), new Text(tweet.toString()));
 				}
 			} catch (ParseException e) {
