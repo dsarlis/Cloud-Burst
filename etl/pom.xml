@@ -95,7 +95,7 @@
                             <finalName>Q4</finalName>
                             <archive>
                                 <manifest>
-                                    <mainClass>org.cloudburst.etls.Q4</mainClass>
+                                    <mainClass>org.cloudburst.etl.Q4</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
