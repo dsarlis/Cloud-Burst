@@ -28,7 +28,6 @@ import java.util.Collections;
 public class Q4Loader {
     private static final String TABLE_NAME = "hashtags";
     private static final String TAB = "\t";
-    private static final String UNDERSCORE = "_";
     private static final String COLON = ":";
 
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
