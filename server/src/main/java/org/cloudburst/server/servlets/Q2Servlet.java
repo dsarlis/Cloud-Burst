@@ -32,7 +32,7 @@ public class Q2Servlet extends HttpServlet {
 	}
 
 	/**
-	 * Initialize MySQL connection pooll.
+	 * Initialize MySQL connection pool.
 	 */
 	private void initMySqlService() {
 		Properties boneCPConfigProperties = new Properties();
