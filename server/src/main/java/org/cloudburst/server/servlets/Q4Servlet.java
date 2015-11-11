@@ -13,7 +13,7 @@ import org.cloudburst.server.services.MySQLService;
 import org.cloudburst.server.util.MySQLConnectionFactory;
 
 /**
- * Servlet for Q2.
+ * Servlet for Q4.
  */
 public class Q4Servlet extends HttpServlet {
 
