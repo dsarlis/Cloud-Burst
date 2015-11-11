@@ -7,6 +7,7 @@ import java.util.*;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.conf.*;
