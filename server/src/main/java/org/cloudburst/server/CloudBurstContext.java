@@ -9,6 +9,7 @@ import javax.servlet.ServletContextListener;
 
 import org.cloudburst.server.servlets.Q1Servlet;
 import org.cloudburst.server.servlets.Q2Servlet;
+import org.cloudburst.server.servlets.Q3Servlet;
 import org.cloudburst.server.servlets.Q4HBaseServlet;
 import org.cloudburst.server.servlets.Q4Servlet;
 import org.cloudburst.server.util.MySQLConnectionFactory;
@@ -35,13 +36,21 @@ public class CloudBurstContext implements ServletContextListener {
             logger.error("Problem reading properties", ex);
         }
 
-        Q1Servlet.setFirstLine(configProperties.getProperty("team.id"), configProperties.getProperty("team.aws.id"));
-        Q2Servlet.setFirstLine(configProperties.getProperty("team.id"), configProperties.getProperty("team.aws.id"));
-        Q4Servlet.setFirstLine(configProperties.getProperty("team.id"), configProperties.getProperty("team.aws.id"));
-        Q4HBaseServlet.setFirstLine(configProperties.getProperty("team.id"), configProperties.getProperty("team.aws.id"));
+        addTeamHeaderToServletResponse(configProperties);
 
         TimeZone.setDefault(TimeZone.getTimeZone("Etc/GMT+4"));
         logger.info("Server started");
+    }
+
+    private void addTeamHeaderToServletResponse(Properties configProperties) {
+        final String teamId = configProperties.getProperty("team.id");
+        final String awsId = configProperties.getProperty("team.aws.id");
+
+        Q1Servlet.setFirstLine(teamId, awsId);
+        Q2Servlet.setFirstLine(teamId, awsId);
+        Q3Servlet.setFirstLine(teamId, awsId);
+        Q4Servlet.setFirstLine(teamId, awsId);
+        Q4HBaseServlet.setFirstLine(teamId, awsId);
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
