@@ -48,10 +48,11 @@ public class Q4HBaseServlet extends HttpServlet {
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException {
 
-//        executorService.execute(new Runnable() {
-//            @Override
-//            public void run() {
-                String hashtag = request.getParameter("hashtag");
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(request.getParameter("hashtag"));
+                /*String hashtag = request.getParameter("hashtag");
                 long n = Long.parseLong(request.getParameter("n"));
 
                 StringBuilder finalMessage = new StringBuilder(FIRST_LINE);
@@ -63,8 +64,8 @@ public class Q4HBaseServlet extends HttpServlet {
                     response.getOutputStream().write(finalMessage.toString().getBytes());
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-//            }
-//        });
+                }*/
+            }
+        });
     }
 }
