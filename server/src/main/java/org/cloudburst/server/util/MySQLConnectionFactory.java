@@ -38,6 +38,7 @@ public class MySQLConnectionFactory {
             config.setMaxConnectionsPerPartition(Integer.parseInt(boneCPConfigProperties.getProperty("maxConnectionsPerPartition")));
             config.setPartitionCount(Integer.parseInt(boneCPConfigProperties.getProperty("partitionCount")));
             config.setAcquireIncrement(Integer.parseInt(boneCPConfigProperties.getProperty("acquireIncrement")));
+            config.setMaxConnectionAgeInSeconds(Integer.parseInt(boneCPConfigProperties.getProperty("maxConnectionAgeInSeconds")));
             connectionPool = new BoneCP(config);
         } catch (SQLException ex) {
             logger.error("Problems creating connection pool", ex);
