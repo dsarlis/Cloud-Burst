@@ -17,6 +17,11 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>
+		<servlet-name>Q3</servlet-name>
+		<servlet-class>org.cloudburst.server.servlets.Q3Servlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
 		<servlet-name>Q4</servlet-name>
 		<servlet-class>org.cloudburst.server.servlets.Q4HBaseServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
@@ -33,6 +38,10 @@
 	<servlet-mapping>
 		<servlet-name>Q2</servlet-name>
 		<url-pattern>/q2</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Q3</servlet-name>
+		<url-pattern>/q3</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Q4</servlet-name>

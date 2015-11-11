@@ -48,10 +48,12 @@ public class Q3Servlet extends HttpServlet {
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
 
-        String hashTag = request.getParameter("hashtag");
-        int limit = Integer.parseInt(request.getParameter("n"));
+        final String start_date = request.getParameter("start_date");
+        final String end_date = request.getParameter("end_date");
+        final String userId = request.getParameter("userid");
+        final String limit = request.getParameter("n");
 
-        String outMessage = FIRST_LINE + mySQLService.getTopHashtags(hashTag, limit);
+        String outMessage = FIRST_LINE + mySQLService.getTweetImpactScore(start_date, end_date, userId, limit);
 
         response.setHeader("Content-Type", "text/plain; charset=UTF-8");
         response.getOutputStream().write(outMessage.toString().getBytes());
