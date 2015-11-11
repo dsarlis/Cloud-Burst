@@ -11,6 +11,8 @@ import org.cloudburst.server.util.HBaseConnectionFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class HBaseService {
     private HBaseConnectionFactory factory;
@@ -48,11 +50,8 @@ public class HBaseService {
         for (int i = 0; i < topN; i++) {
             byte[] value = result.getValue(Bytes.toBytes(columnFamily), Bytes.toBytes(i));
             String[] parts = Bytes.toString(value).split(COLON);
-            System.out.println(parts[3]);
             try {
                 String decodedText = new String(Hex.decodeHex(parts[3].toCharArray()), "UTF-8");
-                System.out.println(new String(Hex.decodeHex("525420406d696b6f736869626f7965733a2023e38193e381aee7bf94e3818fe38293e381abe6839ae3828ce79bb4e38197e3819fe4baba52540a0ae38186e381a1726f6c65e381a8e3818be79fa5e38289e381aae3818be381a3e3819fe38293e381a7e38199e38191e381a9e280a60ae381a6e3818be58db3e88888e381a7e38193e38293e381aae38193e381a8e8a880e38188e381a1e38283e38186e381aee381ade280a620687474703a2f2f742e636f2f51714e3332456d55656d".toCharArray()), "UTF-8"));
-                System.out.println(decodedText);
                 resultValue.append(parts[0]).append(COLON);
                 resultValue.append(parts[1]).append(COLON);
                 resultValue.append(parts[2]).append(COLON);
@@ -64,5 +63,15 @@ public class HBaseService {
             }
         }
         return resultValue.toString();
+    }
+
+    public static void main(String[] args) {
+        try {
+            System.out.println(new String(Hex.decodeHex("525420406d696b6f736869626f7965733a2023e38193e381aee7bf94e3818fe38293e381abe6839ae3828ce79bb4e38197e3819fe4baba52540a0ae38186e381a1726f6c65e381a8e3818be79fa5e38289e381aae3818be381a3e3819fe38293e381a7e38199e38191e381a9e280a60ae381a6e3818be58db3e88888e381a7e38193e38293e381aae38193e381a8e8a880e38188e381a1e38283e38186e381aee381ade280a620687474703a2f2f742e636f2f51714e3332456d55656d".toCharArray())));
+            System.out.println("知らなかったんですけど…");
+        }
+        catch (DecoderException e) {
+            e.printStackTrace();
+        }
     }
 }
