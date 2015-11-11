@@ -31,7 +31,7 @@ load data infile 'dump.csv' into table tweets fields terminated by ',' lines ter
 
 create index hashTag_createdAtDate_totalHashTagCount on hashtags(hashtag, createdAtDate, totalHashTagCount);
 
-LOAD DATA LOCAL INFILE '<concatVersionOfAllInputFiles>' 
+LOAD DATA LOCAL INFILE 'concatAllFiesl' 
 INTO TABLE hashtags
-FIELDS TERMINATED BY '\t';
+FIELDS TERMINATED BY '\t' SET hashtag = UNHEX(hashtag) , originTweetText = UNHEX(originTweetText) ;
 /* Ends here */
