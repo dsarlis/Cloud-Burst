@@ -19,3 +19,18 @@ create index userid_creation_date_index on tweets(userId, creationTime);
 
 
 load data infile 'dump.csv' into table tweets fields terminated by ',' lines terminated by '\n' SET text = UNHEX(text);
+
+
+CREATE TABLE IF NOT EXISTS q3 (
+    userId BIGINT,
+    creationTime DATE not null,
+    impactScore BIGINT not null,
+    tweetId BIGINT not null,
+    text VARBINARY(1024) not null
+) ENGINE = MyISAM;
+
+create index userid_date_index on q3(userId, creationTime);
+
+
+
+load data infile 'dump.csv' into table q3 fields terminated by '\t' lines terminated by '\n' SET text = UNHEX(text);
