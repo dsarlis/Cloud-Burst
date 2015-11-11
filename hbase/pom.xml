@@ -13,6 +13,8 @@
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase</artifactId>
             <version>0.94.18</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/hbase-0.94.18.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
