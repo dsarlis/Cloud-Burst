@@ -1,6 +1,6 @@
 sudo add-apt-repository ppa:webupd8team/java
 sudo apt-get update
-sudo aptitude -y install unzip oracle-java8-installer mysql-server
+sudo aptitude -y install unzip oracle-java8-installer mysql-server htop
 wget http://download.eclipse.org/jetty/stable-9/dist/jetty-distribution-9.3.5.v20151012.zip
 unzip jetty-distribution-9.3.5.v20151012.zip
 mv jetty-distribution-9.3.5.v20151012 jetty
