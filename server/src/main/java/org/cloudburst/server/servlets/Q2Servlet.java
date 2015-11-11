@@ -1,6 +1,8 @@
 package org.cloudburst.server.servlets;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -19,6 +21,8 @@ public class Q2Servlet extends HttpServlet {
 
 	private MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
 
+
+	private static Map<String, String> cache = new HashMap<String, String>();
 	private static String FIRST_LINE;
 
 	public static void setFirstLine(String teamId, String teamAWSId) {
@@ -49,12 +53,18 @@ public class Q2Servlet extends HttpServlet {
 
 		long userId = Long.valueOf(request.getParameter("userid"));
 		String creationTime = request.getParameter("tweet_time");
+		String key = userId + creationTime;
+		String result = cache.get(key);
 
-		StringBuilder finalMessage = new StringBuilder(FIRST_LINE);
-		finalMessage.append(mySQLService.getTweetResult(userId, creationTime));
+		if (result == null) {
+			StringBuilder finalMessage = new StringBuilder(FIRST_LINE);
 
+			finalMessage.append(mySQLService.getTweetResult(userId, creationTime));
+			result = finalMessage.toString();
+			if (cache.size() < 1000000) cache.put(key, result);
+		}
 		response.setHeader("Content-Type", "text/plain; charset=UTF-8");
-		response.getOutputStream().write(finalMessage.toString().getBytes());
+		response.getOutputStream().write(result.getBytes());
 	}
 
 }
