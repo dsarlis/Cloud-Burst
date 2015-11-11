@@ -1,17 +1,18 @@
 package org.cloudburst.server.servlets;
 
-import org.cloudburst.server.services.CipherService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+
+import org.cloudburst.server.services.CipherService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Servlet to answer Q1.
@@ -32,7 +33,8 @@ public class Q1Servlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException {
         String key = request.getParameter("key");
         String message = request.getParameter("message");
 
