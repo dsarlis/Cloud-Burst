@@ -22,7 +22,6 @@ import org.cloudburst.util.Q4Object;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 public class Q4Loader {
@@ -36,7 +35,12 @@ public class Q4Loader {
             String line = value.toString();
             String[] fields = line.split(TAB);
 
-            String outputKey = fields[0];
+            String outputKey = null;
+            try {
+                outputKey = new String(Hex.decodeHex(fields[0].toCharArray()), "UTF-8");
+            } catch (DecoderException e) {
+                e.printStackTrace();
+            }
             String outputValue = fields[1] + COLON + fields[2] + COLON + fields[3] + COLON + fields[4];
             context.write(new Text(outputKey), new Text(outputValue));
             value.clear();
@@ -51,7 +55,7 @@ public class Q4Loader {
             ArrayList<Q4Object> q4 = new ArrayList<>();
             for (Text value: values) {
                 String[] parts = value.toString().split(COLON);
-                q4.add(new Q4Object(parts[1], parts[2], parts[3], parts[4]));
+                q4.add(new Q4Object(parts[0], parts[1], parts[2], parts[3]));
             }
 
             Collections.sort(q4);
@@ -61,12 +65,11 @@ public class Q4Loader {
                 hkey = new ImmutableBytesWritable();
                 // write key value pairs to HFile
                 try {
-                    String outputKey = new String(Hex.decodeHex(key.toString().toCharArray()), "UTF-8")
-                            + COLON + id;
-                    hkey.set(outputKey.getBytes("UTF-8"));
+                    String outputKey =  key.toString();
+                    hkey.set(outputKey.getBytes());
                     String outputValue = q.getDate() + COLON + q.getCount() + COLON + q.getUserList() + COLON +
                             new String(Hex.decodeHex(q.getText().toCharArray()), "UTF-8");
-                    KeyValue kv = new KeyValue(hkey.get(), Bytes.toBytes("data"), Bytes.toBytes("value"),
+                    KeyValue kv = new KeyValue(hkey.get(), Bytes.toBytes("data"), Bytes.toBytes(id),
                             Bytes.toBytes(outputValue));
                     context.write(hkey, kv);
                     id++;

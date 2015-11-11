@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class Q3Loader {
     private static final String TABLE_NAME = "impact";
     private static final String TAB = "\t";
-    private static final String SPACE = " ";
+    private static final String UNDERSCORE = "_";
     private static final String COMMA = ",";
 
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
@@ -31,15 +31,10 @@ public class Q3Loader {
             /* Format of a line: tweetId\tuserId\tcreationTime\tfollowers\tscore\ttext*/
             String line = value.toString();
             String[] fields = line.split(TAB);
-            if (Integer.parseInt(fields[4]) != 0) {
-                String[] dateParts = fields[2].split(SPACE);
 
-                String outputKey = fields[1] + "_" + dateParts[0];
-                String outputValue = null;
-                int impactScore = Integer.parseInt(fields[4]) * (1 + Integer.parseInt(fields[3]));
-                outputValue = dateParts[0] + COMMA + impactScore + COMMA + fields[0] + COMMA + fields[5];
-                context.write(new Text(outputKey), new Text(outputValue));
-            }
+            String outputKey = fields[0] + UNDERSCORE + fields[1];
+            String outputValue = fields[1] + COMMA + fields[2] + COMMA + fields[3] + COMMA + fields[4];
+            context.write(new Text(outputKey), new Text(outputValue));
             value.clear();
         }
     }

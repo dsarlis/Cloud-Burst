@@ -13,7 +13,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Q2HBaseServlet extends HttpServlet {
+public class Q4HBaseServlet extends HttpServlet {
     private static final int THREAD_POOL_SIZE = 100;
     private HBaseService hbaseService = new HBaseService(new HBaseConnectionFactory());
     private ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
@@ -37,7 +37,8 @@ public class Q2HBaseServlet extends HttpServlet {
         Properties hbaseConfigProperties = new Properties();
         try {
             hbaseConfigProperties.load(Q2Servlet.class.getResourceAsStream("/hbase.properties"));
-        } catch (IOException ex) {}
+        } catch (IOException ex) {
+        }
 
         HBaseConnectionFactory.init(hbaseConfigProperties);
     }
@@ -49,11 +50,12 @@ public class Q2HBaseServlet extends HttpServlet {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                long userId = Long.valueOf(request.getParameter("userid"));
-                String creationTime = request.getParameter("tweet_time");
+                String hashtag = request.getParameter("hashtag");
+                long n = Long.parseLong(request.getParameter("n"));
 
                 StringBuilder finalMessage = new StringBuilder(FIRST_LINE);
-                finalMessage.append(hbaseService.getQ2Record(userId + "_" + creationTime, "tweets", "tweetInfo", "data"));
+
+                finalMessage.append(hbaseService.getQ4Record(hashtag, "hashtags", "data", n));
 
                 response.setHeader("Content-Type", "text/plain; charset=UTF-8");
                 try {
@@ -64,5 +66,4 @@ public class Q2HBaseServlet extends HttpServlet {
             }
         });
     }
-
 }
