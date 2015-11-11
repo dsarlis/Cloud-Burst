@@ -9,6 +9,7 @@ import javax.servlet.ServletContextListener;
 
 import org.cloudburst.server.servlets.Q1Servlet;
 import org.cloudburst.server.servlets.Q2Servlet;
+import org.cloudburst.server.servlets.Q4HBaseServlet;
 import org.cloudburst.server.servlets.Q4Servlet;
 import org.cloudburst.server.util.MySQLConnectionFactory;
 import org.slf4j.Logger;
@@ -24,10 +25,12 @@ public class CloudBurstContext implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         Properties boneCPConfigProperties = new Properties();
         Properties configProperties = new Properties();
+        Properties hbaseConfigProperties = new Properties();
 
         try {
             boneCPConfigProperties.load(CloudBurstContext.class.getResourceAsStream("/bonecp.properties"));
             configProperties.load(CloudBurstContext.class.getResourceAsStream("/config.properties"));
+            hbaseConfigProperties.load(CloudBurstContext.class.getResourceAsStream("/hbase.properties"));
         } catch (IOException ex) {
             logger.error("Problem reading properties", ex);
         }
@@ -35,6 +38,7 @@ public class CloudBurstContext implements ServletContextListener {
         Q1Servlet.setFirstLine(configProperties.getProperty("team.id"), configProperties.getProperty("team.aws.id"));
         Q2Servlet.setFirstLine(configProperties.getProperty("team.id"), configProperties.getProperty("team.aws.id"));
         Q4Servlet.setFirstLine(configProperties.getProperty("team.id"), configProperties.getProperty("team.aws.id"));
+        Q4HBaseServlet.setFirstLine(configProperties.getProperty("team.id"), configProperties.getProperty("team.aws.id"));
 
         TimeZone.setDefault(TimeZone.getTimeZone("Etc/GMT+4"));
         logger.info("Server started");

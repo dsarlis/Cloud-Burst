@@ -18,7 +18,7 @@
 	</servlet>
 	<servlet>
 		<servlet-name>Q4</servlet-name>
-		<servlet-class>org.cloudburst.server.servlets.Q4Servlet</servlet-class>
+		<servlet-class>org.cloudburst.server.servlets.Q4HBaseServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>

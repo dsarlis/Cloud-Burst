@@ -32,13 +32,13 @@ public class Q2Loader {
             String[] fields = line.split(TAB);
 
             /* Key { userId_createdAtDate } */
-            String outputKey = fields[2] + "_" + fields[3];
+            String outputKey = fields[1] + "_" + fields[2];
 
             String outputValue = null;
             try {
                 /* Value { tweetId : sentimentScore : text } */
-                outputValue = fields[0] + ":" + fields[5] + ":"
-                        + new String(Hex.decodeHex(fields[6].toCharArray()), "UTF-8");
+                outputValue = fields[0] + ":" + fields[3] + ":"
+                        + new String(Hex.decodeHex(fields[4].toCharArray()), "UTF-8");
             } catch (DecoderException e) {
                 e.printStackTrace();
             }

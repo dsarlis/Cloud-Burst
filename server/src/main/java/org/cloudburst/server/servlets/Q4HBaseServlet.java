@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 public class Q4HBaseServlet extends HttpServlet {
     private static final int THREAD_POOL_SIZE = 100;
     private HBaseService hbaseService = new HBaseService(new HBaseConnectionFactory());
-    private ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+    private static ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     private static String FIRST_LINE;
 
@@ -36,8 +36,9 @@ public class Q4HBaseServlet extends HttpServlet {
     private void initHBaseService() {
         Properties hbaseConfigProperties = new Properties();
         try {
-            hbaseConfigProperties.load(Q2Servlet.class.getResourceAsStream("/hbase.properties"));
+            hbaseConfigProperties.load(Q4HBaseServlet.class.getResourceAsStream("/hbase.properties"));
         } catch (IOException ex) {
+            System.out.println(ex);
         }
 
         HBaseConnectionFactory.init(hbaseConfigProperties);
@@ -47,9 +48,9 @@ public class Q4HBaseServlet extends HttpServlet {
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException {
 
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
+//        executorService.execute(new Runnable() {
+//            @Override
+//            public void run() {
                 String hashtag = request.getParameter("hashtag");
                 long n = Long.parseLong(request.getParameter("n"));
 
@@ -63,7 +64,7 @@ public class Q4HBaseServlet extends HttpServlet {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
-        });
+//            }
+//        });
     }
 }

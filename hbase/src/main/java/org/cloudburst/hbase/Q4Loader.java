@@ -64,18 +64,14 @@ public class Q4Loader {
             for (Q4Object q: q4) {
                 hkey = new ImmutableBytesWritable();
                 // write key value pairs to HFile
-                try {
                     String outputKey =  key.toString();
                     hkey.set(outputKey.getBytes());
                     String outputValue = q.getDate() + COLON + q.getCount() + COLON + q.getUserList() + COLON +
-                            new String(Hex.decodeHex(q.getText().toCharArray()), "UTF-8");
+                            q.getText();
                     KeyValue kv = new KeyValue(hkey.get(), Bytes.toBytes("data"), Bytes.toBytes(id),
                             Bytes.toBytes(outputValue));
                     context.write(hkey, kv);
                     id++;
-                } catch (DecoderException e) {
-                    e.printStackTrace();
-                }
             }
         }
     }
