@@ -1,39 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-    <display-name>Cloud Burst Server</display-name>
-    <listener>
-        <listener-class>org.cloudburst.server.CloudBurstContext</listener-class>
-    </listener>
-    <servlet>
-        <servlet-name>Q1</servlet-name>
-        <servlet-class>org.cloudburst.server.servlets.Q1Servlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet>
-        <servlet-name>Q2</servlet-name>
-        <servlet-class>org.cloudburst.server.servlets.Q2Servlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet>
-        <servlet-name>Heartbeat</servlet-name>
-        <servlet-class>org.cloudburst.server.servlets.HeartBeatServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Q1</servlet-name>
-        <url-pattern>/q1</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Q2</servlet-name>
-        <url-pattern>/q2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Heartbeat</servlet-name>
-        <url-pattern>/heartbeat</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>jsp</servlet-name>
-        <url-pattern>/jsp/*</url-pattern>
-    </servlet-mapping>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	<display-name>Cloud Burst Server</display-name>
+	<listener>
+		<listener-class>org.cloudburst.server.CloudBurstContext</listener-class>
+	</listener>
+	<servlet>
+		<servlet-name>Q1</servlet-name>
+		<servlet-class>org.cloudburst.server.servlets.Q1Servlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>Q2</servlet-name>
+		<servlet-class>org.cloudburst.server.servlets.Q2Servlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>Q4</servlet-name>
+		<servlet-class>org.cloudburst.server.servlets.Q4Servlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>Heartbeat</servlet-name>
+		<servlet-class>org.cloudburst.server.servlets.HeartBeatServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Q1</servlet-name>
+		<url-pattern>/q1</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Q2</servlet-name>
+		<url-pattern>/q2</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Q4</servlet-name>
+		<url-pattern>/q4</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Heartbeat</servlet-name>
+		<url-pattern>/heartbeat</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>jsp</servlet-name>
+		<url-pattern>/jsp/*</url-pattern>
+	</servlet-mapping>
 </web-app>
