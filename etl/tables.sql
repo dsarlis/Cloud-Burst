@@ -19,3 +19,19 @@ create index userid_creation_date_index on tweets(userId, creationTime);
 
 
 load data infile 'dump.csv' into table tweets fields terminated by ',' lines terminated by '\n' SET text = UNHEX(text);
+
+/* Q4 Loading into mySql */
+	CREATE TABLE IF NOT EXISTS hashtags (
+    hashtag VARBINARY(990) not null,
+    createdAtDate DATE not null,
+    totalHashTagCount INT not null,
+    sortedUniqueUserList VARCHAR(1024) not null,
+    originTweetText VARBINARY(1024) not null
+) ENGINE = MyISAM;
+
+create index hashTag_createdAtDate_totalHashTagCount on hashtags(hashtag, createdAtDate, totalHashTagCount);
+
+LOAD DATA LOCAL INFILE '<concatVersionOfAllInputFiles>' 
+INTO TABLE hashtags
+FIELDS TERMINATED BY '\t';
+/* Ends here */
