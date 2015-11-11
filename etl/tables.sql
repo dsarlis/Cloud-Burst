@@ -31,6 +31,6 @@ CREATE TABLE IF NOT EXISTS q3 (
 
 create index userid_date_index on q3(userId, creationTime);
 
-create index userid_imptact_tweet on q3(impactScore, tweetId);
+create index userid_impact_tweet on q3(impactScore, tweetId);
 
 load data infile 'dump.csv' into table q3 fields terminated by '\t' lines terminated by '\n' SET text = UNHEX(text);
