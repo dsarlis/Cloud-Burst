@@ -77,10 +77,8 @@ public class MySQLService {
                 /* Date:Count:[List of user ids]:SourceTweetText\n */
                 builder.append(rs.getDate("createdAtDate")).append(COLON);
                 builder.append(rs.getInt("totalHashTagCount")).append(COLON);
-                builder.append(String.format("[%s]", rs.getString("sortedUniqueUserList"))).append(COLON);
-                builder.append(
-                        TextCensor.censorBannedWords(new String(rs.getBytes("originTweetText"), StandardCharsets.UTF_8))
-                                .replace(";", "\n"));
+                builder.append(rs.getString("sortedUniqueUserList")).append(COLON);
+                builder.append(new String(rs.getBytes("originTweetText"), StandardCharsets.UTF_8).replace(";", "\n"));
                 builder.append(NEW_LINE);
             }
         } catch (SQLException ex) {

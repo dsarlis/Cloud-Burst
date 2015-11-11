@@ -35,7 +35,7 @@
 		<url-pattern>/q2</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>Q4HBaseServlet</servlet-name>
+		<servlet-name>Q4</servlet-name>
 		<url-pattern>/q4</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
