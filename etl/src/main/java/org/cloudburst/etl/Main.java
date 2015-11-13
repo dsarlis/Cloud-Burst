@@ -77,6 +77,7 @@ public class Main {
         Job job = new Job(conf, "etl");
 
         job.setJarByClass(Main.class);
+        /* Set output keys for mapper and reducer */
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
         job.setMapperClass(Map.class);
@@ -85,6 +86,7 @@ public class Main {
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);
 
+        /* Set input and output file formats */
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 

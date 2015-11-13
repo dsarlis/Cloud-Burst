@@ -38,6 +38,7 @@ public class Q3Object implements Comparable {
         this.text = text;
     }
 
+    /* Sort according to impactScore in descending order */
     @Override
     public int compareTo(Object o) {
         return -1 * this.impactScore.compareTo(((Q3Object) o).getImpactScore());

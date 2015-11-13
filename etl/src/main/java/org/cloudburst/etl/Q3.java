@@ -47,6 +47,7 @@ public class Q3 {
                         outputValue.append(tweet.getImpactScore()).append(UNDERSCORE);
                         outputValue.append(tweet.getTweetId()).append(UNDERSCORE);
                         String censoredText = TextCensor.censorBannedWords(tweet.getText());
+                        /* Text is printed in Hex to avoid encoding problems */
                         outputValue.append(Hex.encodeHexString(censoredText.getBytes("UTF-8")));
                         String date = format.format(Date.parse(String.valueOf(tweet.getCreationTime())));
                         context.write(new Text(tweet.getUser().getUserId() + UNDERSCORE + date),
@@ -73,8 +74,10 @@ public class Q3 {
 
             String[] keyParts = key.toString().split(UNDERSCORE);
 
+            /* Iterate over the values with the same key */
             for (Text value : values) {
                 String[] parts = value.toString().split(UNDERSCORE);
+                /* If the tweet id is unique add a new object */
                 if (!uniqueTweetIds.contains(parts[1])) {
                     uniqueTweetIds.add(parts[1]);
                     Q3Object q3 = new Q3Object(parts[0], parts[1], parts[2]);
@@ -86,10 +89,12 @@ public class Q3 {
                 }
             }
 
+            /* Sort the objects according to the sorting criteria (see Q3Object) */
             Collections.sort(posTweets);
             Collections.sort(negTweets);
 
             int count = 0;
+            /* Keep at most 10 positive tweets per user and date */
             for (Q3Object p: posTweets) {
                 count++;
                 if (count > 10) {
@@ -103,6 +108,7 @@ public class Q3 {
                 context.write(new Text(keyParts[0]), new Text(outputValue.toString()));
             }
             count = 0;
+            /* Keep at most 10 negative tweets per user and date */
             for (Q3Object n: negTweets) {
                 count++;
                 if (count > 10) {
@@ -126,6 +132,7 @@ public class Q3 {
         Job job = new Job(conf, "q3");
 
         job.setJarByClass(Q3.class);
+        /* Set output keys for mapper and reducer */
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
         job.setMapperClass(Map.class);
@@ -134,6 +141,7 @@ public class Q3 {
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);
 
+        /* Set input and output file formats */
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 

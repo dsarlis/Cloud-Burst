@@ -47,6 +47,7 @@ public class Q4 {
                     String date = format.format(Date.parse(String.valueOf(tweet.getCreationTime())));
                     java.util.Map<String, Integer> hashtags = tweet.getHashTags();
                     for (String hashtag: hashtags.keySet()) {
+                        /* Hashtag and text are printed in Hex to avoid encoding problems */
                         StringBuilder outputValue = new StringBuilder();
                         outputValue.append(hashtags.get(hashtag).intValue()).append(UNDERSCORE);
                         outputValue.append(tweet.getUser().getUserId()).append(UNDERSCORE);
@@ -81,6 +82,7 @@ public class Q4 {
                 usersList.add(Long.parseLong(parts[1]));
                 q4.add(new Q4Object(parts[2], parts[3]));
             }
+            /* Sort the objects according to the sort criteria (see Q4Object) */
             Collections.sort(q4);
             ArrayList<Long> uniqueUsersList = new ArrayList<Long>(usersList);
             Collections.sort(uniqueUsersList);
@@ -102,6 +104,7 @@ public class Q4 {
         Job job = new Job(conf, "q4");
 
         job.setJarByClass(Q4.class);
+        /* Set output keys for mapper and reducer */
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
         job.setMapperClass(Map.class);
@@ -110,6 +113,7 @@ public class Q4 {
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);
 
+         /* Set input and output file formats */
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
