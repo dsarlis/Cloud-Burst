@@ -67,13 +67,11 @@ public class CloudBurstContext implements ServletContextListener {
         Q4Servlet.setFirstLine(teamId, awsId);
     }
 
-<<<<<<< HEAD
-    private void forceUTF8Encoding () {
-        System.setProperty("file.encoding","UTF-8");
-=======
+    /**
+     * Forces UTF8 charset to the linux machines.
+     */
     private void forceUTF8Encoding() {
         System.setProperty("file.encoding", "UTF-8");
->>>>>>> 8e01750... Code clean up
         Field charset = null;
         try {
             charset = Charset.class.getDeclaredField("defaultCharset");
@@ -94,6 +92,5 @@ public class CloudBurstContext implements ServletContextListener {
         /* Shutting down the connection pool for MySQL. */
         MySQLConnectionFactory.shutdown();
     }
-
 
 }
