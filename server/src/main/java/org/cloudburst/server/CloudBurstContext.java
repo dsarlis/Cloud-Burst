@@ -67,8 +67,13 @@ public class CloudBurstContext implements ServletContextListener {
         Q4Servlet.setFirstLine(teamId, awsId);
     }
 
+<<<<<<< HEAD
     private void forceUTF8Encoding () {
         System.setProperty("file.encoding","UTF-8");
+=======
+    private void forceUTF8Encoding() {
+        System.setProperty("file.encoding", "UTF-8");
+>>>>>>> 8e01750... Code clean up
         Field charset = null;
         try {
             charset = Charset.class.getDeclaredField("defaultCharset");

@@ -1,5 +1,9 @@
 package org.cloudburst.hbase;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.hadoop.conf.Configuration;
@@ -18,11 +22,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.cloudburst.util.Q4Object;
-
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 
 public class Q4Loader {
     private static final String TABLE_NAME = "hashtags";
@@ -51,29 +50,33 @@ public class Q4Loader {
     public static class Reduce extends Reducer<Text, Text, ImmutableBytesWritable, KeyValue> {
         private ImmutableBytesWritable hkey;
 
-        public void reduce(Text key, Iterable<Text> values, Context context)
-                throws IOException, InterruptedException {
+        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             ArrayList<Q4Object> q4 = new ArrayList<>();
 
             /* For each value create an object with all the info */
-            for (Text value: values) {
+            for (Text value : values) {
                 String[] parts = value.toString().split(COLON);
                 q4.add(new Q4Object(parts[0], parts[1], parts[2], parts[3]));
             }
 
-            /* Sort the objects according to the sort criteria (see Q4Object for more info) */
+            /*
+             * Sort the objects according to the sort criteria (see Q4Object for
+             * more info)
+             */
             Collections.sort(q4);
 
             int id = 0;
-            for (Q4Object q: q4) {
+            for (Q4Object q : q4) {
                 hkey = new ImmutableBytesWritable();
-                String outputKey =  key.toString();
+                String outputKey = key.toString();
                 /* Key {hashtag} */
                 hkey.set(outputKey.getBytes());
-                String outputValue = q.getDate() + COLON + q.getCount() + COLON + q.getUserList() + COLON +
-                        q.getText();
+                String outputValue = q.getDate() + COLON + q.getCount() + COLON + q.getUserList() + COLON + q.getText();
                 /* Value {date:count:userList:earliestTweetText} */
-                /* Each value is stored in a different column using as qualifier its rank depending on the sort order*/
+                /*
+                 * Each value is stored in a different column using as qualifier
+                 * its rank depending on the sort order
+                 */
                 KeyValue kv = new KeyValue(hkey.get(), Bytes.toBytes("data"), Bytes.toBytes(id),
                         Bytes.toBytes(outputValue));
                 context.write(hkey, kv);
@@ -82,7 +85,8 @@ public class Q4Loader {
         }
     }
 
-    // driver method for the Map Reduce job
+
+    /* driver method for the Map Reduce job */
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
         conf.set("hbase.table.name", TABLE_NAME);
@@ -90,7 +94,7 @@ public class Q4Loader {
         Job job = new Job(conf);
 
         job.setJarByClass(Q4Loader.class);
-        // set mapper and reducer keys and values
+        /* set mapper and reducer keys and values */
         job.setOutputKeyClass(ImmutableBytesWritable.class);
         job.setOutputValueClass(KeyValue.class);
         job.setMapOutputKeyClass(Text.class);
@@ -102,7 +106,7 @@ public class Q4Loader {
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(HFileOutputFormat.class);
 
-        // set the output of the job to be in HFile format
+        /* set the output of the job to be in HFile format */
         HTable hTable = new HTable(conf, TABLE_NAME);
         HFileOutputFormat.configureIncrementalLoad(job, hTable);
 
@@ -112,4 +116,3 @@ public class Q4Loader {
         job.waitForCompletion(true);
     }
 }
-
