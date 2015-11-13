@@ -1,13 +1,14 @@
 package org.cloudburst.server.util;
 
-import com.jolbox.bonecp.BoneCP;
-import com.jolbox.bonecp.BoneCPConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.jolbox.bonecp.BoneCP;
+import com.jolbox.bonecp.BoneCPConfig;
 
 /**
  * Load BoneCP connection pool.
@@ -34,11 +35,15 @@ public class MySQLConnectionFactory {
             config.setUser(boneCPConfigProperties.getProperty("username"));
             config.setPassword(boneCPConfigProperties.getProperty("password"));
             config.setJdbcUrl(boneCPConfigProperties.getProperty("jdbcUrl"));
-            config.setMinConnectionsPerPartition(Integer.parseInt(boneCPConfigProperties.getProperty("minConnectionsPerPartition")));
-            config.setMaxConnectionsPerPartition(Integer.parseInt(boneCPConfigProperties.getProperty("maxConnectionsPerPartition")));
+            config.setMinConnectionsPerPartition(
+                    Integer.parseInt(boneCPConfigProperties.getProperty("minConnectionsPerPartition")));
+            config.setMaxConnectionsPerPartition(
+                    Integer.parseInt(boneCPConfigProperties.getProperty("maxConnectionsPerPartition")));
             config.setPartitionCount(Integer.parseInt(boneCPConfigProperties.getProperty("partitionCount")));
             config.setAcquireIncrement(Integer.parseInt(boneCPConfigProperties.getProperty("acquireIncrement")));
-            config.setMaxConnectionAgeInSeconds(Integer.parseInt(boneCPConfigProperties.getProperty("maxConnectionAgeInSeconds")));
+            config.setMaxConnectionAgeInSeconds(
+                    Integer.parseInt(boneCPConfigProperties.getProperty("maxConnectionAgeInSeconds")));
+
             connectionPool = new BoneCP(config);
         } catch (SQLException ex) {
             logger.error("Problems creating connection pool", ex);

@@ -1,22 +1,22 @@
 package org.cloudburst.server.servlets;
 
-import org.cloudburst.server.services.HBaseService;
-import org.cloudburst.server.util.HBaseConnectionFactory;
+import java.io.IOException;
+import java.util.Properties;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+import org.cloudburst.server.services.HBaseService;
+import org.cloudburst.server.util.HBaseConnectionFactory;
 
 public class Q4HBaseServlet extends HttpServlet {
-    private static final int THREAD_POOL_SIZE = 100;
+
+    private static final long serialVersionUID = 591010235959419459L;
+
     private HBaseService hbaseService = new HBaseService(new HBaseConnectionFactory());
-    private static ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     private static String FIRST_LINE;
 
@@ -45,26 +45,21 @@ public class Q4HBaseServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(final HttpServletRequest request, final HttpServletResponse response)
-            throws ServletException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException {
 
-//        executorService.submit(new Runnable() {
-//            @Override
-//            public void run() {
-                String hashtag = request.getParameter("hashtag");
-                long n = Long.parseLong(request.getParameter("n"));
+        /* Parsing the request */
+        String hashtag = request.getParameter("hashtag");
+        long n = Long.parseLong(request.getParameter("n"));
 
-                StringBuilder finalMessage = new StringBuilder(FIRST_LINE);
+        /* Generates the response. */
+        StringBuilder finalMessage = new StringBuilder(FIRST_LINE);
+        finalMessage.append(hbaseService.getQ4Record(hashtag, "hashtags", "data", n));
 
-                finalMessage.append(hbaseService.getQ4Record(hashtag, "hashtags", "data", n));
-
-                response.setHeader("Content-Type", "text/plain; charset=UTF-8");
-                try {
-                    response.getOutputStream().write(finalMessage.toString().getBytes());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-//            }
-//        });
+        response.setHeader("Content-Type", "text/plain; charset=UTF-8");
+        try {
+            response.getOutputStream().write(finalMessage.toString().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

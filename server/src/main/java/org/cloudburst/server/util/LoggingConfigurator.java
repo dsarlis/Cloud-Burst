@@ -1,22 +1,24 @@
 package org.cloudburst.server.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Logging configurator using logback.
  */
 public class LoggingConfigurator {
 
-    private static final String PRODUCTION_PATH = LoggingConfigurator.class.getResource("/production_logback.xml").toString().replace("file:", "");
-    private static final String DEVELOPMENT_PATH = LoggingConfigurator.class.getResource("/development_logback.xml").toString().replace("file:", "");
+    private static final String PRODUCTION_PATH = LoggingConfigurator.class.getResource("/production_logback.xml")
+            .toString().replace("file:", "");
+    private static final String DEVELOPMENT_PATH = LoggingConfigurator.class.getResource("/development_logback.xml")
+            .toString().replace("file:", "");
 
     public enum Environment {
-        PRODUCTION(PRODUCTION_PATH),
-        DEVELOPMENT(DEVELOPMENT_PATH);
+        PRODUCTION(PRODUCTION_PATH), DEVELOPMENT(DEVELOPMENT_PATH);
 
         private String pathToConfig;
 

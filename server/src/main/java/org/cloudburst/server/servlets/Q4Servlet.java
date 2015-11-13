@@ -50,9 +50,11 @@ public class Q4Servlet extends HttpServlet {
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
 
+        /* Parsing the request. */
         String hashTag = request.getParameter("hashtag");
         int limit = Integer.parseInt(request.getParameter("n"));
 
+        /* Generating the response. */
         String outMessage = FIRST_LINE + mySQLService.getTopHashtags(hashTag, limit);
 
         response.setHeader("Content-Type", "text/plain; charset=UTF-8");

@@ -1,24 +1,24 @@
 package org.cloudburst.server.servlets;
 
-import org.cloudburst.server.services.HBaseService;
-import org.cloudburst.server.util.HBaseConnectionFactory;
+import java.io.IOException;
+import java.util.Properties;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+import org.cloudburst.server.services.HBaseService;
+import org.cloudburst.server.util.HBaseConnectionFactory;
 
 public class Q2HBaseServlet extends HttpServlet {
-    private static final int THREAD_POOL_SIZE = 100;
-    private HBaseService hbaseService = new HBaseService(new HBaseConnectionFactory());
-    private ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+
+    private static final long serialVersionUID = -782079378024747828L;
 
     private static String FIRST_LINE;
+
+    private HBaseService hbaseService = new HBaseService(new HBaseConnectionFactory());
 
     public static void setFirstLine(String teamId, String teamAWSId) {
         FIRST_LINE = teamId + "," + teamAWSId + "\n";
@@ -37,32 +37,29 @@ public class Q2HBaseServlet extends HttpServlet {
         Properties hbaseConfigProperties = new Properties();
         try {
             hbaseConfigProperties.load(Q2Servlet.class.getResourceAsStream("/hbase.properties"));
-        } catch (IOException ex) {}
+        } catch (IOException ex) {
+        }
 
         HBaseConnectionFactory.init(hbaseConfigProperties);
     }
 
     @Override
-    public void doGet(final HttpServletRequest request, final HttpServletResponse response)
-            throws ServletException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException {
 
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                long userId = Long.valueOf(request.getParameter("userid"));
-                String creationTime = request.getParameter("tweet_time");
+        /* Parsing request parameters. */
+        long userId = Long.valueOf(request.getParameter("userid"));
+        String creationTime = request.getParameter("tweet_time");
 
-                StringBuilder finalMessage = new StringBuilder(FIRST_LINE);
-                finalMessage.append(hbaseService.getQ2Record(userId + "_" + creationTime, "tweets", "tweetInfo", "data"));
+        /* Generating response. */
+        StringBuilder finalMessage = new StringBuilder(FIRST_LINE);
+        finalMessage.append(hbaseService.getQ2Record(userId + "_" + creationTime, "tweets", "tweetInfo", "data"));
 
-                response.setHeader("Content-Type", "text/plain; charset=UTF-8");
-                try {
-                    response.getOutputStream().write(finalMessage.toString().getBytes());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        response.setHeader("Content-Type", "text/plain; charset=UTF-8");
+        try {
+            response.getOutputStream().write(finalMessage.toString().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
