@@ -1,6 +1,8 @@
 package org.cloudburst.server;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.TimeZone;
 
@@ -35,6 +37,8 @@ public class CloudBurstContext implements ServletContextListener {
             logger.error("Problem reading properties", ex);
         }
 
+        forceUTF8Encoding();
+
         addTeamHeaderToServletResponse(configProperties);
 
         TimeZone.setDefault(TimeZone.getTimeZone("Etc/GMT+4"));
@@ -51,10 +55,23 @@ public class CloudBurstContext implements ServletContextListener {
         Q4Servlet.setFirstLine(teamId, awsId);
     }
 
+    private void forceUTF8Encoding () {
+        System.setProperty("file.encoding","UTF-8");
+        Field charset = null;
+        try {
+            charset = Charset.class.getDeclaredField("defaultCharset");
+            charset.setAccessible(true);
+            charset.set(null, null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         System.gc();
         java.beans.Introspector.flushCaches();
         MySQLConnectionFactory.shutdown();
     }
+
 
 }

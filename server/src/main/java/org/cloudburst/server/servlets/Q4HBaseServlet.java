@@ -48,7 +48,7 @@ public class Q4HBaseServlet extends HttpServlet {
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException {
 
-//        executorService.execute(new Runnable() {
+//        executorService.submit(new Runnable() {
 //            @Override
 //            public void run() {
                 String hashtag = request.getParameter("hashtag");
