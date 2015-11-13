@@ -54,18 +54,20 @@ public class Q2Loader {
             hkey = new ImmutableBytesWritable();
             StringBuilder outputValue = new StringBuilder();
             HashMap<String, String> tweetMap = new HashMap<>();
+
+            /* for each key create a hashmap of key-value pairs */
             for (Text value : values) {
                 String[] fields = value.toString().split(":");
                 tweetMap.put(fields[0], value.toString());
             }
-            // sort by tweet ID and then append to output with "\n"
+            /* sort by tweet ID and then append to output with "\n" */
             Object[] keys = tweetMap.keySet().toArray();
             Arrays.sort(keys);
             for (Object k : keys) {
                 outputValue.append(tweetMap.get(k));
                 outputValue.append("\n");
             }
-            // write key value pairs to HFile
+            /* write key value pairs to HFile */
             hkey.set(key.getBytes());
             KeyValue kv = new KeyValue(hkey.get(), Bytes.toBytes("tweetInfo"), Bytes.toBytes("data"),
                     Bytes.toBytes(outputValue.toString()));
@@ -73,6 +75,7 @@ public class Q2Loader {
         }
     }
 
+    /* driver method for the Map Reduce job */
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
         conf.set("hbase.table.name", TABLE_NAME);
@@ -80,6 +83,7 @@ public class Q2Loader {
         Job job = new Job(conf);
 
         job.setJarByClass(Q2Loader.class);
+        /* set mapper and reducer keys and values */
         job.setOutputKeyClass(ImmutableBytesWritable.class);
         job.setOutputValueClass(KeyValue.class);
         job.setMapOutputKeyClass(Text.class);
@@ -91,6 +95,7 @@ public class Q2Loader {
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(HFileOutputFormat.class);
 
+        /* set the output of the job to be in HFile format */
         HTable hTable = new HTable(conf, TABLE_NAME);
         HFileOutputFormat.configureIncrementalLoad(job, hTable);
 
