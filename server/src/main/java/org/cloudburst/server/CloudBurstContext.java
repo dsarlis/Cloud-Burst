@@ -24,7 +24,15 @@ public class CloudBurstContext implements ServletContextListener {
 
     private final static Logger logger = LoggerFactory.getLogger(CloudBurstContext.class);
 
+    /**
+     * Gets called when the server starts.
+     */
     public void contextInitialized(ServletContextEvent servletContextEvent) {
+
+        /*
+         * Loads all property files, and puts in the context. Makes it easier
+         * for global access.
+         */
         Properties boneCPConfigProperties = new Properties();
         Properties configProperties = new Properties();
         Properties hbaseConfigProperties = new Properties();
@@ -45,6 +53,10 @@ public class CloudBurstContext implements ServletContextListener {
         logger.info("Server started");
     }
 
+    /**
+     * Pulled up the teamId and the AWS.Id in this method. All servlets are
+     * given the team headers in the context itself.
+     */
     private void addTeamHeaderToServletResponse(Properties configProperties) {
         final String teamId = configProperties.getProperty("team.id");
         final String awsId = configProperties.getProperty("team.aws.id");
@@ -67,9 +79,14 @@ public class CloudBurstContext implements ServletContextListener {
         }
     }
 
+    /**
+     * Gets called when the server is gracefully shutdown.
+     */
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         System.gc();
         java.beans.Introspector.flushCaches();
+
+        /* Shutting down the connection pool for MySQL. */
         MySQLConnectionFactory.shutdown();
     }
 

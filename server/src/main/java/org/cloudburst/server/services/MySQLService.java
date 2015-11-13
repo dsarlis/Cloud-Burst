@@ -14,10 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Service to call MySQL.
+ * This service interacts with MySQL server.
  */
 public class MySQLService {
 
+    /* String constants */
     private static final String NEW_LINE = "\n";
     private static final char SPACE = ' ';
     private static final char PLUS = '+';
@@ -27,6 +28,7 @@ public class MySQLService {
     private static final String NEGATIVE_HEADER = NEW_LINE + "Negative Tweets" + NEW_LINE;
     private static final String POSITIVE_HEADER = "Positive Tweets" + NEW_LINE;
 
+    /* Queries for all questions. */
     private static final String Q2 = "SELECT * FROM tweets WHERE userId=? AND creationTime=? ORDER BY tweetId";
     private static final String Q3 = "(SELECT * FROM q3 WHERE userId=@userId AND creationTime BETWEEN '@start' AND '@end' AND impactScore > 0 ORDER BY impactScore DESC, tweetId ASC LIMIT @limit) UNION ALL (SELECT * FROM q3 WHERE userId=@userId AND creationTime BETWEEN '@start' AND '@end' AND impactScore < 0 ORDER BY impactScore ASC, tweetId ASC LIMIT @limit);";
     private static final String Q4 = "SELECT * FROM hashtags WHERE hashtag=? ORDER BY totalHashTagCount DESC, createdAtDate ASC LIMIT ?;";
@@ -41,7 +43,7 @@ public class MySQLService {
 
     /**
      * Return formatted result with the (tweet id, score) from a given user and
-     * timestamp.
+     * time-stamp.
      */
     public String getTweetResult(long userId, String creationTime) {
 

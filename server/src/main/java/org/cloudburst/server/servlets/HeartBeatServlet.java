@@ -1,23 +1,19 @@
 package org.cloudburst.server.servlets;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 /**
- * Servlet to check health status from instane.
+ * Checks the health status of an instance. Used by the ELB.
  */
 public class HeartBeatServlet extends HttpServlet {
 
-    private final static Logger logger = LoggerFactory.getLogger(HeartBeatServlet.class);
+    private static final long serialVersionUID = 7593306951530031720L;
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
@@ -25,7 +21,8 @@ public class HeartBeatServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {}
-
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException {
+    }
 
 }

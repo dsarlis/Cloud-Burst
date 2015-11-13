@@ -9,8 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CipherService {
 
-    private static final BigInteger X = new BigInteger("8271997208960872478735181815578166723519929177896558845922250595511921395049126920528021164569045773");
-    private static final char[] ABC = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+    private static final BigInteger X = new BigInteger(
+            "8271997208960872478735181815578166723519929177896558845922250595511921395049126920528021164569045773");
+    private static final char[] ABC = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+            'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
     private static Map<Character, Integer> INVERSE_MAP = new ConcurrentHashMap<Character, Integer>();
 
     static {
@@ -54,14 +56,14 @@ public class CipherService {
         char[][] matrix = new char[n][n];
         int index = 0;
 
-        //Generate matrix
+        /* Generate matrix */
         for (int row = 0; row < n; row++) {
-            for (int col = 0; col< n; col++) {
+            for (int col = 0; col < n; col++) {
                 matrix[row][col] = message.charAt(index++);
             }
         }
 
-        //Read diagonals
+        /* Read diagonals */
         for (int slice = 0; slice < 2 * n - 1; ++slice) {
             int z = slice < n ? 0 : slice - n + 1;
 
@@ -69,7 +71,7 @@ public class CipherService {
                 int letterValue = INVERSE_MAP.get(matrix[j][slice - j]);
                 int letterValueWithoutOffset = letterValue - offset;
 
-                //Offset
+                /* Offset */
                 if (letterValueWithoutOffset < 0) {
                     letterValueWithoutOffset = ABC.length + letterValueWithoutOffset;
                 }

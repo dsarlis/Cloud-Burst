@@ -17,6 +17,8 @@ import org.cloudburst.server.util.MySQLConnectionFactory;
  */
 public class Q4Servlet extends HttpServlet {
 
+    private static final long serialVersionUID = -3974307160198438787L;
+
     private MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
 
     private static String FIRST_LINE;
