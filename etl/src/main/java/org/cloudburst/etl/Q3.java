@@ -19,12 +19,19 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.cloudburst.etl.model.Tweet;
 import org.cloudburst.etl.util.*;
 
+/**
+ * Main class to process Q3 files.
+ */
 public class Q3 {
     private static final String TAB = "\t";
     private static final String UNDERSCORE = "_";
 
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
 
+        /**
+         * Mapper method that keeps userId and date as the KEY, and all other required fields as
+         * the VALUE.
+         */
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             try {
                 String line = value.toString();
@@ -54,6 +61,10 @@ public class Q3 {
 
     public static class Reduce extends Reducer<Text, Text, Text, Text> {
 
+        /**
+         * The Reducer method iterates over the values with same key (userId and date). Then it sorts them. Finally it print first the
+         * 10 best positive and 10 worst negative.
+         */
         public void reduce(Text key, Iterable<Text> values, Context context)
                 throws IOException, InterruptedException {
             HashSet<String> uniqueTweetIds = new HashSet<String>();
@@ -107,6 +118,9 @@ public class Q3 {
         }
     }
 
+    /**
+     * The MAIN method serves as a driver of the custom job.
+     */
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Configuration conf = new Configuration();
         Job job = new Job(conf, "q3");

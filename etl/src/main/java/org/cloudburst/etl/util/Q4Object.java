@@ -1,5 +1,8 @@
 package org.cloudburst.etl.util;
 
+/**
+ * Class that represent the Q4 data. It implement comparable so it can be sorted.
+ */
 public class Q4Object implements Comparable {
     private String createdAt;
     private String text;

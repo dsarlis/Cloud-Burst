@@ -1,6 +1,5 @@
 package org.cloudburst.etl.model;
 
-import org.cloudburst.etl.Main;
 import org.cloudburst.etl.util.StringUtil;
 import org.cloudburst.etl.util.TweetUtil;
 

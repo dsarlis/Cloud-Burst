@@ -55,6 +55,9 @@ public class TweetUtil {
         }
     }
 
+    /**
+     * Returns old tweets maximum date
+     */
     public static Date getOldTweetsDate() {
         if (oldTweetsDate == null) {
             try {

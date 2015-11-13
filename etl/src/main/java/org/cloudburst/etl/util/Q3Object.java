@@ -1,5 +1,8 @@
 package org.cloudburst.etl.util;
 
+/**
+ * Class that represent the Q3 data. It implement comparable so it can be sorted.
+ */
 public class Q3Object implements Comparable {
     private String impactScore;
     private String tweetId;

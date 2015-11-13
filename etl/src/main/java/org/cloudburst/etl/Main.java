@@ -21,15 +21,14 @@ import org.cloudburst.etl.util.TextCensor;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * Main class to process tweets and insert them into MySQL and create an output
- * file.
+ * Main class to process Q2 files.
  */
 public class Main {
 
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
 
         /**
-         * Mapper method that keeps TweetId as the KEY, and all other fields as
+         * Mapper method that keeps TweetId as the KEY, and all other required fields as
          * the VALUE.
          */
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
@@ -52,16 +51,15 @@ public class Main {
 
                 context.write(new Text(tweetId), new Text(builder.toString()));
 
-            } catch (JsonSyntaxException | DecoderException e) {
-            }
+            } catch (JsonSyntaxException e) {
+			} catch (DecoderException e) {}
         }
     }
 
     public static class Reduce extends Reducer<Text, Text, Text, Text> {
 
         /**
-         * The Reducer method simply iterates over the values, and writes it to
-         * the context.
+         * The Reducer method simply print one of the value with same tweetId.
          */
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             for (Text value : values) {
