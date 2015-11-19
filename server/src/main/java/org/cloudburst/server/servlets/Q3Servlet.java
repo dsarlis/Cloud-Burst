@@ -1,8 +1,6 @@
 package org.cloudburst.server.servlets;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -17,15 +15,13 @@ import org.cloudburst.server.util.MySQLConnectionFactory;
 /**
  * Class that handles response for Q2.
  */
-public class Q2Servlet extends HttpServlet {
+public class Q3Servlet extends HttpServlet {
 
-    private static final long serialVersionUID = -6772179220153648509L;
+    private static final long serialVersionUID = 7661709122294459584L;
 
     private static String FIRST_LINE;
-    private MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
 
-    /* Using cache in front-end to reduce database overhead */
-    private static Map<String, String> cache = new HashMap<String, String>();
+    private MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
 
     public static void setFirstLine(String teamId, String teamAWSId) {
         FIRST_LINE = teamId + "," + teamAWSId + "\n";
@@ -43,7 +39,7 @@ public class Q2Servlet extends HttpServlet {
     private void initMySqlService() {
         Properties boneCPConfigProperties = new Properties();
         try {
-            boneCPConfigProperties.load(Q2Servlet.class.getResourceAsStream("/bonecp.properties"));
+            boneCPConfigProperties.load(Q3Servlet.class.getResourceAsStream("/bonecp.properties"));
         } catch (IOException ex) {
         }
 
@@ -54,27 +50,17 @@ public class Q2Servlet extends HttpServlet {
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
 
-        /* Parsing the request. */
-        long userId = Long.valueOf(request.getParameter("userid"));
-        String creationTime = request.getParameter("tweet_time");
+        /* Parsing the request parameters. */
+        final String start_date = request.getParameter("start_date");
+        final String end_date = request.getParameter("end_date");
+        final String userId = request.getParameter("userid");
+        final String limit = request.getParameter("n");
 
-        /* Preparing response, by first checking inside the cache. */
-        String key = userId + creationTime;
-        String result = cache.get(key);
-
-        if (result == null) {
-            StringBuilder finalMessage = new StringBuilder(FIRST_LINE);
-
-            /* Gets the result for the query from the MySQLService. */
-            finalMessage.append(mySQLService.getTweetResult(userId, creationTime));
-
-            result = finalMessage.toString();
-            if (cache.size() < 300000)
-                cache.put(key, result);
-        }
+        /* Gets the response from the SQL Service. */
+        String outMessage = FIRST_LINE + mySQLService.getTweetImpactScore(start_date, end_date, userId, limit);
 
         response.setHeader("Content-Type", "text/plain; charset=UTF-8");
-        response.getOutputStream().write(result.getBytes());
+        response.getOutputStream().write(outMessage.toString().getBytes());
     }
 
 }

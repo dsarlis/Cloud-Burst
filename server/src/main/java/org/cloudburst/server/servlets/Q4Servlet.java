@@ -1,8 +1,6 @@
 package org.cloudburst.server.servlets;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -15,17 +13,15 @@ import org.cloudburst.server.services.MySQLService;
 import org.cloudburst.server.util.MySQLConnectionFactory;
 
 /**
- * Class that handles response for Q2.
+ * Servlet for Q4.
  */
-public class Q2Servlet extends HttpServlet {
+public class Q4Servlet extends HttpServlet {
 
-    private static final long serialVersionUID = -6772179220153648509L;
+    private static final long serialVersionUID = -3974307160198438787L;
 
-    private static String FIRST_LINE;
     private MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
 
-    /* Using cache in front-end to reduce database overhead */
-    private static Map<String, String> cache = new HashMap<String, String>();
+    private static String FIRST_LINE;
 
     public static void setFirstLine(String teamId, String teamAWSId) {
         FIRST_LINE = teamId + "," + teamAWSId + "\n";
@@ -43,7 +39,7 @@ public class Q2Servlet extends HttpServlet {
     private void initMySqlService() {
         Properties boneCPConfigProperties = new Properties();
         try {
-            boneCPConfigProperties.load(Q2Servlet.class.getResourceAsStream("/bonecp.properties"));
+            boneCPConfigProperties.load(Q4Servlet.class.getResourceAsStream("/bonecp.properties"));
         } catch (IOException ex) {
         }
 
@@ -55,26 +51,14 @@ public class Q2Servlet extends HttpServlet {
             throws ServletException, IOException {
 
         /* Parsing the request. */
-        long userId = Long.valueOf(request.getParameter("userid"));
-        String creationTime = request.getParameter("tweet_time");
+        String hashTag = request.getParameter("hashtag");
+        int limit = Integer.parseInt(request.getParameter("n"));
 
-        /* Preparing response, by first checking inside the cache. */
-        String key = userId + creationTime;
-        String result = cache.get(key);
-
-        if (result == null) {
-            StringBuilder finalMessage = new StringBuilder(FIRST_LINE);
-
-            /* Gets the result for the query from the MySQLService. */
-            finalMessage.append(mySQLService.getTweetResult(userId, creationTime));
-
-            result = finalMessage.toString();
-            if (cache.size() < 300000)
-                cache.put(key, result);
-        }
+        /* Generating the response. */
+        String outMessage = FIRST_LINE + mySQLService.getTopHashtags(hashTag, limit);
 
         response.setHeader("Content-Type", "text/plain; charset=UTF-8");
-        response.getOutputStream().write(result.getBytes());
+        response.getOutputStream().write(outMessage.toString().getBytes());
     }
 
 }
