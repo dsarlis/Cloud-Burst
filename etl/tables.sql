@@ -29,7 +29,7 @@ load data infile 'dump.csv' into table tweets fields terminated by ',' lines ter
     originTweetText VARBINARY(1024) not null
 ) ENGINE = MyISAM;
 
-create index hashTag_createdAtDate_totalHashTagCount on hashtags(hashtag, createdAtDate, totalHashTagCount);
+create index hashTag_createdAtDate_totalHashTagCount on hashtags(hashtag,  totalHashTagCount, createdAtDate);
 
 LOAD DATA LOCAL INFILE 'concatAllFiesl' 
 INTO TABLE hashtags

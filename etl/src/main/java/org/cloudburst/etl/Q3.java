@@ -41,17 +41,17 @@ public class Q3 {
                 if (tweet != null) {
                     TextSentimentGrader.addSentimentScore(tweet);
                     if (tweet.getImpactScore() != 0) {
-                        StringBuilder outputValue = new StringBuilder();
-                        String censoredText = TextCensor.censorBannedWords(tweet.getText());
                         Calendar calendar = Calendar.getInstance();
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                        String censoredText = TextCensor.censorBannedWords(tweet.getText());
                         StringBuilder keyValue = new StringBuilder();
+                        StringBuilder outputValue = new StringBuilder();
 
+                        format.setTimeZone(TimeZone.getTimeZone(TweetUtil.TIME_ZONE_UTC_GMT));
                         calendar.setTimeZone(TimeZone.getTimeZone(TweetUtil.TIME_ZONE_UTC_GMT));
                         calendar.setTime(tweet.getCreationTime());
                         keyValue.append(tweet.getUser().getUserId()).append(UNDERSCORE);
-                        keyValue.append(calendar.get(Calendar.YEAR)).append("-");
-                        keyValue.append(calendar.get(Calendar.MONTH)).append("-");
-                        keyValue.append(calendar.get(Calendar.DATE));
+                        keyValue.append(format.format(calendar.getTime()));
 
                         outputValue.append(tweet.getImpactScore()).append(UNDERSCORE);
                         outputValue.append(tweet.getTweetId()).append(UNDERSCORE);

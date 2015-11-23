@@ -37,7 +37,7 @@ public class Q3Object implements Comparable<Q3Object> {
         long otherImpactScoreAbs = Math.abs(other.getImpactScore());
 
         if (impactScoreAbs == otherImpactScoreAbs) {
-            return tweetId == other.getTweetId() ? 0 : (tweetId < other.getTweetId() ? 1 : -1);
+            return tweetId == other.getTweetId() ? 0 : (tweetId < other.getTweetId() ? -1 : 1);
 
         }
         return  impactScoreAbs < otherImpactScoreAbs ? 1 : -1;
