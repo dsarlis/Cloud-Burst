@@ -65,7 +65,7 @@
                             <finalName>Main</finalName>
                             <archive>
                                 <manifest>
-                                    <mainClass>org.cloudburst.etl.Main</mainClass>
+                                    <mainClass>org.cloudburst.etl.Q2</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
@@ -96,21 +96,6 @@
                             <archive>
                                 <manifest>
                                     <mainClass>org.cloudburst.etl.Q4</mainClass>
-                                </manifest>
-                            </archive>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>Q5</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>Q5</finalName>
-                            <archive>
-                                <manifest>
-                                    <mainClass>org.cloudburst.etl.Q5</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>

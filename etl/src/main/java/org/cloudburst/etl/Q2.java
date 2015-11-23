@@ -23,7 +23,7 @@ import com.google.gson.JsonSyntaxException;
 /**
  * Main class to process Q2 files.
  */
-public class Main {
+public class Q2 {
 
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
 
@@ -76,7 +76,7 @@ public class Main {
         Configuration conf = new Configuration();
         Job job = new Job(conf, "etl");
 
-        job.setJarByClass(Main.class);
+        job.setJarByClass(Q2.class);
         /* Set output keys for mapper and reducer */
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
