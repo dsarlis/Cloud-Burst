@@ -56,13 +56,13 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>Main</id>
+                        <id>Q2</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>Main</finalName>
+                            <finalName>Q2</finalName>
                             <archive>
                                 <manifest>
                                     <mainClass>org.cloudburst.etl.Q2</mainClass>
@@ -96,6 +96,21 @@
                             <archive>
                                 <manifest>
                                     <mainClass>org.cloudburst.etl.Q4</mainClass>
+                                </manifest>
+                            </archive>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>Q5</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>Q5</finalName>
+                            <archive>
+                                <manifest>
+                                    <mainClass>org.cloudburst.etl.Q5</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
