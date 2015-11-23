@@ -30,7 +30,7 @@ public class Q5 {
                 Tweet tweet = TweetUtil.generateTweet(jsonElement);
 
                 if (tweet != null) {
-                    context.write(new Text(tweet.getUser().getUserId()+""), new Text(tweet.getTweetId()+""));
+                    context.write(new Text(tweet.getUser().getUserId() + ""), new Text(tweet.getTweetId() + ""));
                 }
             } catch (JsonSyntaxException e) {
             }
@@ -46,7 +46,7 @@ public class Q5 {
             for (Text value : values) {
                 uniqueTweetIds.add(value.toString());
             }
-            context.write(key, new Text(uniqueTweetIds.size()+""));
+            context.write(key, new Text(uniqueTweetIds.size() + ""));
         }
     }
 
