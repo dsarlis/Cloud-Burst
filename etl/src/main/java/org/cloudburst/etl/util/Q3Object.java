@@ -3,31 +3,23 @@ package org.cloudburst.etl.util;
 /**
  * Class that represent the Q3 data. It implement comparable so it can be sorted.
  */
-public class Q3Object implements Comparable {
-    private String impactScore;
-    private String tweetId;
+public class Q3Object implements Comparable<Q3Object> {
+    private long impactScore;
+    private long tweetId;
     private String text;
 
     public Q3Object(String impactScore, String tweetId, String text) {
-        this.impactScore = impactScore;
-        this.tweetId = tweetId;
+        this.impactScore = Long.parseLong(impactScore);
+        this.tweetId = Long.parseLong(tweetId);
         this.text = text;
     }
 
-    public String getImpactScore() {
+    public long getImpactScore() {
         return impactScore;
     }
 
-    public void setImpactScore(String impactScore) {
-        this.impactScore = impactScore;
-    }
-
-    public String getTweetId() {
+    public long getTweetId() {
         return tweetId;
-    }
-
-    public void setTweetId(String tweetId) {
-        this.tweetId = tweetId;
     }
 
     public String getText() {
@@ -40,7 +32,14 @@ public class Q3Object implements Comparable {
 
     /* Sort according to impactScore in descending order */
     @Override
-    public int compareTo(Object o) {
-        return -1 * this.impactScore.compareTo(((Q3Object) o).getImpactScore());
+    public int compareTo(Q3Object other) {
+        long impactScoreAbs = Math.abs(impactScore);
+        long otherImpactScoreAbs = Math.abs(other.getImpactScore());
+
+        if (impactScoreAbs == otherImpactScoreAbs) {
+            return tweetId == other.getTweetId() ? 0 : (tweetId < other.getTweetId() ? 1 : -1);
+
+        }
+        return  impactScoreAbs < otherImpactScoreAbs ? 1 : -1;
     }
 }

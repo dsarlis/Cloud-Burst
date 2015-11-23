@@ -41,17 +41,24 @@ public class Q3 {
                 if (tweet != null) {
                     TextSentimentGrader.addSentimentScore(tweet);
                     if (tweet.getImpactScore() != 0) {
-                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-                        format.setTimeZone(TimeZone.getTimeZone(TweetUtil.TIME_ZONE_UTC_GMT));
                         StringBuilder outputValue = new StringBuilder();
+                        String censoredText = TextCensor.censorBannedWords(tweet.getText());
+                        Calendar calendar = Calendar.getInstance();
+                        StringBuilder keyValue = new StringBuilder();
+
+                        calendar.setTimeZone(TimeZone.getTimeZone(TweetUtil.TIME_ZONE_UTC_GMT));
+                        calendar.setTime(tweet.getCreationTime());
+                        keyValue.append(tweet.getUser().getUserId()).append(UNDERSCORE);
+                        keyValue.append(calendar.get(Calendar.YEAR)).append("-");
+                        keyValue.append(calendar.get(Calendar.MONTH)).append("-");
+                        keyValue.append(calendar.get(Calendar.DATE));
+
                         outputValue.append(tweet.getImpactScore()).append(UNDERSCORE);
                         outputValue.append(tweet.getTweetId()).append(UNDERSCORE);
-                        String censoredText = TextCensor.censorBannedWords(tweet.getText());
                         /* Text is printed in Hex to avoid encoding problems */
                         outputValue.append(Hex.encodeHexString(censoredText.getBytes("UTF-8")));
-                        String date = format.format(Date.parse(String.valueOf(tweet.getCreationTime())));
-                        context.write(new Text(tweet.getUser().getUserId() + UNDERSCORE + date),
-                                new Text(outputValue.toString()));
+
+                        context.write(new Text(keyValue.toString()), new Text(outputValue.toString()));
                     }
                 }
             } catch (JsonSyntaxException e) {
@@ -73,15 +80,22 @@ public class Q3 {
             ArrayList<Q3Object> negTweets = new ArrayList<Q3Object>();
 
             String[] keyParts = key.toString().split(UNDERSCORE);
+            String userId = keyParts[0];
+            String date = keyParts[1];
 
             /* Iterate over the values with the same key */
             for (Text value : values) {
-                String[] parts = value.toString().split(UNDERSCORE);
+                String[] valueParts = value.toString().split(UNDERSCORE);
+                String impactScore = valueParts[0];
+                String tweetId = valueParts[1];
+                String text = valueParts[2];
+
                 /* If the tweet id is unique add a new object */
-                if (!uniqueTweetIds.contains(parts[1])) {
-                    uniqueTweetIds.add(parts[1]);
-                    Q3Object q3 = new Q3Object(parts[0], parts[1], parts[2]);
-                    if (Integer.parseInt(parts[0]) > 0) {
+                if (!uniqueTweetIds.contains(tweetId)) {
+                    Q3Object q3 = new Q3Object(impactScore, tweetId, text);
+
+                    uniqueTweetIds.add(tweetId);
+                    if (Integer.parseInt(impactScore) > 0) {
                         posTweets.add(q3);
                     } else {
                         negTweets.add(q3);
@@ -95,31 +109,33 @@ public class Q3 {
 
             int count = 0;
             /* Keep at most 10 positive tweets per user and date */
-            for (Q3Object p: posTweets) {
+            for (Q3Object posTweet: posTweets) {
                 count++;
                 if (count > 10) {
                     break;
                 }
                 StringBuilder outputValue = new StringBuilder();
-                outputValue.append(keyParts[1]).append(TAB);
-                outputValue.append(p.getImpactScore()).append(TAB);
-                outputValue.append(p.getTweetId()).append(TAB);
-                outputValue.append(p.getText()).append(TAB);
-                context.write(new Text(keyParts[0]), new Text(outputValue.toString()));
+
+                outputValue.append(date).append(TAB);
+                outputValue.append(posTweet.getImpactScore()).append(TAB);
+                outputValue.append(posTweet.getTweetId()).append(TAB);
+                outputValue.append(posTweet.getText()).append(TAB);
+                context.write(new Text(userId), new Text(outputValue.toString()));
             }
             count = 0;
             /* Keep at most 10 negative tweets per user and date */
-            for (Q3Object n: negTweets) {
+            for (Q3Object negTweet: negTweets) {
                 count++;
                 if (count > 10) {
                     break;
                 }
                 StringBuilder outputValue = new StringBuilder();
-                outputValue.append(keyParts[1]).append(TAB);
-                outputValue.append(n.getImpactScore()).append(TAB);
-                outputValue.append(n.getTweetId()).append(TAB);
-                outputValue.append(n.getText()).append(TAB);
-                context.write(new Text(keyParts[0]), new Text(outputValue.toString()));
+
+                outputValue.append(date).append(TAB);
+                outputValue.append(negTweet.getImpactScore()).append(TAB);
+                outputValue.append(negTweet.getTweetId()).append(TAB);
+                outputValue.append(negTweet.getText()).append(TAB);
+                context.write(new Text(userId), new Text(outputValue.toString()));
             }
         }
     }
@@ -147,5 +163,6 @@ public class Q3 {
 
         job.waitForCompletion(true);
     }
+    
 }
 
