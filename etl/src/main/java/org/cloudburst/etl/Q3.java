@@ -95,7 +95,7 @@ public class Q3 {
                     Q3Object q3 = new Q3Object(impactScore, tweetId, text);
 
                     uniqueTweetIds.add(tweetId);
-                    if (Integer.parseInt(impactScore) > 0) {
+                    if (q3.getImpactScore() > 0) {
                         posTweets.add(q3);
                     } else {
                         negTweets.add(q3);
@@ -163,6 +163,6 @@ public class Q3 {
 
         job.waitForCompletion(true);
     }
-    
+
 }
 
