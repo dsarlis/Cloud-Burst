@@ -35,18 +35,16 @@ public class CloudBurstContext implements ServletContextListener {
          */
         Properties boneCPConfigProperties = new Properties();
         Properties configProperties = new Properties();
-        Properties hbaseConfigProperties = new Properties();
 
         try {
             boneCPConfigProperties.load(CloudBurstContext.class.getResourceAsStream("/bonecp.properties"));
             configProperties.load(CloudBurstContext.class.getResourceAsStream("/config.properties"));
-            hbaseConfigProperties.load(CloudBurstContext.class.getResourceAsStream("/hbase.properties"));
         } catch (IOException ex) {
             logger.error("Problem reading properties", ex);
         }
 
         forceUTF8Encoding();
-
+        MySQLConnectionFactory.init(boneCPConfigProperties);
         addTeamHeaderToServletResponse(configProperties);
 
         TimeZone.setDefault(TimeZone.getTimeZone("Etc/GMT+4"));

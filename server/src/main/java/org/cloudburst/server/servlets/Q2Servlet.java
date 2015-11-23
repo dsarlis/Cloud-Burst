@@ -32,25 +32,6 @@ public class Q2Servlet extends HttpServlet {
     }
 
     @Override
-    public void init(ServletConfig servletConfig) throws ServletException {
-        super.init(servletConfig);
-        initMySqlService();
-    }
-
-    /**
-     * Initialize MySQL connection pool.
-     */
-    private void initMySqlService() {
-        Properties boneCPConfigProperties = new Properties();
-        try {
-            boneCPConfigProperties.load(Q2Servlet.class.getResourceAsStream("/bonecp.properties"));
-        } catch (IOException ex) {
-        }
-
-        MySQLConnectionFactory.init(boneCPConfigProperties);
-    }
-
-    @Override
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
 
