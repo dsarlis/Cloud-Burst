@@ -49,7 +49,7 @@ public class Q1Servlet extends HttpServlet {
         finalMessage.append(simpleDateFormat.format(Calendar.getInstance().getTime())).append("\n");
         finalMessage.append(decryptedMessage).append("\n");
 
-        response.addHeader("Connection", "keep-alive");
+        response.setHeader("Content-Type", "text/plain; charset=UTF-8");
         response.getOutputStream().write(finalMessage.toString().getBytes());
     }
 

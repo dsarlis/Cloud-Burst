@@ -27,12 +27,17 @@ sudo cp /Q4/* /var/lib/mysql/15619tp/
 
 sudo chmod -R 777 /var/lib/mysql/15619tp/
 
-#Put in /etc/mysql/my.cfg
-
-#key_buffer              = 6G
-#query_cache_limit       = 0
-#query_cache_size        = 0
-
 sudo umount /Q2
 sudo umount /Q3
 sudo umount /Q4
+
+
+###########
+
+aws ec2 attach-volume --volume-id vol-a809f44b --instance-id i- --device /dev/sdf
+aws ec2 attach-volume --volume-id vol-4424dba7 --instance-id i- --device /dev/sdg
+aws ec2 attach-volume --volume-id vol-721fe091 --instance-id i- --device /dev/sdh
+
+aws ec2 detach-volume --volume-id vol-a809f44b
+aws ec2 detach-volume --volume-id vol-4424dba7
+aws ec2 detach-volume --volume-id vol-721fe091

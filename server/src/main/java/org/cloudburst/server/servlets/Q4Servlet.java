@@ -1,6 +1,8 @@
 package org.cloudburst.server.servlets;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -21,6 +23,8 @@ public class Q4Servlet extends HttpServlet {
 
     private MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
 
+    private static Map<String, String> cache = new HashMap<String, String>();
+
     private static String FIRST_LINE;
 
     public static void setFirstLine(String teamId, String teamAWSId) {
@@ -35,11 +39,19 @@ public class Q4Servlet extends HttpServlet {
         String hashTag = request.getParameter("hashtag");
         int limit = Integer.parseInt(request.getParameter("n"));
 
+        String key = hashTag + limit;
+        String result = cache.get(key);
+
+        if (result == null) {
         /* Generating the response. */
-        String outMessage = FIRST_LINE + mySQLService.getTopHashtags(hashTag, limit);
+            result = FIRST_LINE + mySQLService.getTopHashtags(hashTag, limit);
+            if (cache.size() < 300000) {
+                cache.put(key, result);
+            }
+        }
 
         response.setHeader("Content-Type", "text/plain; charset=UTF-8");
-        response.getOutputStream().write(outMessage.toString().getBytes());
+        response.getOutputStream().write(result.getBytes());
     }
 
 }

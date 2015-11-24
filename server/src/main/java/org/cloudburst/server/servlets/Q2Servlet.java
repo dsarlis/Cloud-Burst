@@ -50,8 +50,9 @@ public class Q2Servlet extends HttpServlet {
             finalMessage.append(mySQLService.getTweetResult(userId, creationTime));
 
             result = finalMessage.toString();
-            if (cache.size() < 300000)
+            if (cache.size() < 300000) {
                 cache.put(key, result);
+            }
         }
 
         response.setHeader("Content-Type", "text/plain; charset=UTF-8");
