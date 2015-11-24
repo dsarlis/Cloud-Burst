@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 import org.cloudburst.server.util.MySQLConnectionFactory;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ public class MySQLService {
     private static final String Q2 = "SELECT * FROM tweets WHERE userId=? AND creationTime=? ORDER BY tweetId";
     private static final String Q3 = "(SELECT * FROM q3 WHERE userId=@userId AND creationTime BETWEEN '@start' AND '@end' AND impactScore > 0 ORDER BY impactScore DESC, tweetId ASC LIMIT @limit) UNION ALL (SELECT * FROM q3 WHERE userId=@userId AND creationTime BETWEEN '@start' AND '@end' AND impactScore < 0 ORDER BY impactScore ASC, tweetId ASC LIMIT @limit);";
     private static final String Q4 = "SELECT * FROM hashtags WHERE hashtag=? ORDER BY totalHashTagCount DESC, createdAtDate ASC LIMIT ?;";
+    private static final String Q5 = "SELECT cumulative, cumulative_off_by_one FROM total_tweets WHERE userId=? OR userId=?";
 
     private final static Logger logger = LoggerFactory.getLogger(MySQLService.class);
 
@@ -139,6 +141,31 @@ public class MySQLService {
         }
 
         return builder.toString();
+    }
+
+    public String getTotalTweets(long userIdMin, long userIdMax) {
+        long cumulative = 0;
+        long cumulativeOffByOne = 0;
+        try (Connection connection = factory.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(Q5);
+            preparedStatement.setLong(1, userIdMin);
+            preparedStatement.setLong(2, userIdMax);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                if (rs.getLong("cumulative") > cumulative) {
+                    cumulative = rs.getLong("cumulative");
+                }
+                if (rs.getLong("cumulative_off_by_one") < cumulativeOffByOne) {
+                    cumulativeOffByOne = rs.getLong("cumulative_off_by_one");
+                }
+            }
+        } catch (SQLException ex) {
+            logger.error("Problem executing statement", ex);
+        }
+
+        return (cumulative - cumulativeOffByOne) + "";
     }
 
 }

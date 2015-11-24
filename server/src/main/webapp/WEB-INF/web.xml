@@ -27,6 +27,11 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>
+		<servlet-name>Q5</servlet-name>
+		<servlet-class>org.cloudburst.server.servlets.Q5Servlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
 		<servlet-name>Heartbeat</servlet-name>
 		<servlet-class>org.cloudburst.server.servlets.HeartBeatServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
@@ -46,6 +51,10 @@
 	<servlet-mapping>
 		<servlet-name>Q4</servlet-name>
 		<url-pattern>/q4</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Q5</servlet-name>
+		<url-pattern>/q5</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>Heartbeat</servlet-name>
