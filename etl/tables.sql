@@ -58,4 +58,4 @@ CREATE TABLE IF NOT EXISTS total_tweets (
 
 create index userid on total_tweets(userId);
 
-load data infile 'q5_input' into table total_tweets fields terminated by '\t' lines terminated by '\n'';
+load data infile 'total_output' into table total_tweets fields terminated by '\t' lines terminated by '\n'';
