@@ -51,11 +51,10 @@ load data infile 'dump.csv' into table q3 fields terminated by '\t' lines termin
 
 CREATE TABLE IF NOT EXISTS total_tweets (
     userId BIGINT,
-    tweet_count BIGINT,
     cumulative BIGINT,
     cumulative_off_by_one BIGINT
 ) ENGINE = MyISAM;
 
 create index userid on total_tweets(userId);
 
-load data infile 'total_output' into table total_tweets fields terminated by '\t' lines terminated by '\n'';
+load data infile 'total_output' into table total_tweets fields terminated by '\t' lines terminated by '\n';
