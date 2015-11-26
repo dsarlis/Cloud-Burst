@@ -36,6 +36,8 @@ public class MySQLService {
     private static final String Q5 = "SELECT cumulative, cumulative_off_by_one FROM total_tweets WHERE " +
             "userId=(SELECT MIN(userId) FROM total_tweets WHERE userId>=?) OR userId=(SELECT MAX(userId) " +
             "FROM total_tweets WHERE userId<=?)";
+    private static final String Q6Append = "UPDATE q6 SET tag=? WHERE tweetId=?";
+    private static final String Q6Read = "SELECT * FROM q6 WHERE tweetId=?";
 
     private final static Logger logger = LoggerFactory.getLogger(MySQLService.class);
 
@@ -62,8 +64,7 @@ public class MySQLService {
             while (rs.next()) {
                 builder.append(rs.getLong("tweetId")).append(COLON);
                 builder.append(rs.getInt("score")).append(COLON);
-                builder.append(
-                        censorBannedWords(new String(rs.getBytes("text"), StandardCharsets.UTF_8)).replace(";", "\n"));
+                builder.append(new String(rs.getBytes("text"), StandardCharsets.UTF_8).replace(";", "\n"));
                 builder.append(NEW_LINE);
             }
         } catch (SQLException ex) {
@@ -170,4 +171,36 @@ public class MySQLService {
         return (cumulative - cumulativeOffByOne) + "\n";
     }
 
+    public void appendTag(long tweetId, String tag) {
+        try (Connection connection = factory.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(Q5);
+            preparedStatement.setLong(1, tweetId);
+            preparedStatement.setString(2, tag);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException ex) {
+            logger.error("Problem executing statement", ex);
+        }
+    }
+
+    public String readTweetWithTag(long tweetId) {
+        StringBuilder builder = new StringBuilder();
+        try (Connection connection = factory.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(Q6Read);
+            preparedStatement.setLong(1, tweetId);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                builder.append(new String(rs.getBytes("text"), StandardCharsets.UTF_8).replace(";", "\n"));
+                builder.append(rs.getString("tag"));
+            }
+            builder.append(NEW_LINE);
+        } catch (SQLException ex) {
+            logger.error("Problem executing statement", ex);
+        }
+
+        return builder.toString();
+    }
 }

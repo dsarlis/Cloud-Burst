@@ -61,6 +61,7 @@ public class CloudBurstContext implements ServletContextListener {
         Q3Servlet.setFirstLine(teamId, awsId);
         Q4Servlet.setFirstLine(teamId, awsId);
         Q5Servlet.setFirstLine(teamId, awsId);
+        Q6Servlet.setFirstLine(teamId, awsId);
     }
 
     /**
