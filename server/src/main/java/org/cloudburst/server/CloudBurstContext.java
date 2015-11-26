@@ -13,6 +13,7 @@ import org.cloudburst.server.servlets.Q1Servlet;
 import org.cloudburst.server.servlets.Q2Servlet;
 import org.cloudburst.server.servlets.Q3Servlet;
 import org.cloudburst.server.servlets.Q4Servlet;
+import org.cloudburst.server.util.LoggingConfigurator;
 import org.cloudburst.server.util.MySQLConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public class CloudBurstContext implements ServletContextListener {
      * Gets called when the server starts.
      */
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-
+        LoggingConfigurator.configureFor(LoggingConfigurator.Environment.PRODUCTION);
         /*
          * Loads all property files, and puts in the context. Makes it easier
          * for global access.
