@@ -171,16 +171,17 @@ public class MySQLService {
         return (cumulative - cumulativeOffByOne) + "\n";
     }
 
-    public void appendTag(long tweetId, String tag) {
+    public boolean appendTag(long tweetId, String tag) {
         try (Connection connection = factory.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(Q5);
+            PreparedStatement preparedStatement = connection.prepareStatement(Q6Append);
             preparedStatement.setString(1, tag);
             preparedStatement.setLong(2, tweetId);
 
             preparedStatement.executeUpdate();
-
+            return true;
         } catch (SQLException ex) {
             logger.error("Problem executing statement", ex);
+            return false;
         }
     }
 
