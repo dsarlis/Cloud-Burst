@@ -1,9 +1,7 @@
 package org.cloudburst.etl;
 
-import java.io.IOException;
-import java.text.ParseException;
-
 import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.hadoop.conf.Configuration;
@@ -20,15 +18,16 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.cloudburst.etl.model.Tweet;
 import org.cloudburst.etl.util.StringUtil;
 import org.cloudburst.etl.util.TextCensor;
-
-import com.google.gson.JsonSyntaxException;
 import org.cloudburst.etl.util.TextSentimentGrader;
 import org.cloudburst.etl.util.TweetUtil;
 
+import java.io.IOException;
+import java.text.ParseException;
+
 /**
- * Main class to process Q2 files.
+ * Main class to process Q6 files.
  */
-public class Q2 {
+public class Q6 {
 
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
 
@@ -42,16 +41,14 @@ public class Q2 {
                 JsonElement jsonElement = TweetUtil.throwExceptionForMalformedTweets(line);
                 Tweet tweet = TweetUtil.generateTweet(jsonElement);
 
-                if (tweet != null && !TweetUtil.isTweetOld(tweet)) {
-                    TextSentimentGrader.addSentimentScore(tweet);
+                if (tweet != null) {
                     String censoredText = TextCensor.censorBannedWords(tweet.getText());
 
                     tweet.setText(censoredText);
-                    context.write(new Text(tweet.getTweetId() + ""), new Text(tweet.toString()));
+                    context.write(new Text(tweet.getTweetId() + ""), new Text(Hex.encodeHexString(censoredText.getBytes("UTF-8"))));
                 }
 
-            } catch (JsonSyntaxException e) {
-			} catch (ParseException e) {}
+            } catch (JsonSyntaxException e) {}
         }
     }
 
@@ -75,7 +72,7 @@ public class Q2 {
         Configuration conf = new Configuration();
         Job job = new Job(conf, "etl");
 
-        job.setJarByClass(Q2.class);
+        job.setJarByClass(Q6.class);
         /* Set output keys for mapper and reducer */
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
