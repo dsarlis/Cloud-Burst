@@ -24,6 +24,8 @@ public class Q6Servlet extends HttpServlet {
 
     private static final String[] SERVERS = {"172.31.13.42"};
 
+    private static final String[] DNS_NAMES = {"ec2...."};
+
     private static ConcurrentHashMap<Long, AtomicInteger> locks = new ConcurrentHashMap<Long, AtomicInteger>();
 
     private MySQLService mySQLService = new MySQLService(new MySQLConnectionFactory());
@@ -91,7 +93,7 @@ public class Q6Servlet extends HttpServlet {
             /* send it to the correct server */
             if (serverNumber != myNumber) {
                 response.setStatus(302);
-                response.setHeader("Location", "http://" + SERVERS[serverNumber] + path);
+                response.setHeader("Location", "http://" + DNS_NAMES[serverNumber] + path);
                 return;
             }
 
