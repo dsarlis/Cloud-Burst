@@ -115,6 +115,21 @@
                             </archive>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>Q6</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>Q6</finalName>
+                            <archive>
+                                <manifest>
+                                    <mainClass>org.cloudburst.etl.Q6</mainClass>
+                                </manifest>
+                            </archive>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

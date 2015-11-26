@@ -58,3 +58,11 @@ CREATE TABLE IF NOT EXISTS total_tweets (
 create index userid on total_tweets(userId);
 
 load data infile 'total_output' into table total_tweets fields terminated by '\t' lines terminated by '\n';
+
+CREATE TABLE IF NOT EXISTS q6 (
+    tweetId BIGINT primary key,
+    text VARBINARY(1024) not null
+) ENGINE = MyISAM;
+
+load data infile 'dump.csv' into table q6 fields terminated by '\t' lines terminated by '\n' SET text = UNHEX(text);
+
