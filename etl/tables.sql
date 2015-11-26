@@ -61,7 +61,7 @@ load data infile 'total_output' into table total_tweets fields terminated by '\t
 
 CREATE TABLE IF NOT EXISTS q6 (
     tweetId BIGINT primary key,
-    text VARBINARY(1024) not null
+    text VARBINARY(1024) not null,
     tag VARCHAR(1024)
 ) ENGINE = MyISAM;
 
