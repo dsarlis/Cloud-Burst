@@ -60,9 +60,7 @@ public class Q6Servlet extends HttpServlet {
                     if (seq == 5) {
                         locks.remove(tid);
                     } else {
-                        AtomicInteger lock = locks.get(tid);
-                        lock.getAndIncrement();
-                        locks.put(tid, lock);
+                        locks.get(tid).getAndIncrement();
                     }
                     return;
                 }
