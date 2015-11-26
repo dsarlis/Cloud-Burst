@@ -195,7 +195,10 @@ public class MySQLService {
 
             while (rs.next()) {
                 builder.append(new String(rs.getBytes("text"), StandardCharsets.UTF_8).replace(";", "\n"));
-                builder.append(rs.getString("tag"));
+                String tag = rs.getString("tag");
+                if (tag != null) {
+                    builder.append(rs.getString("tag"));
+                }
             }
             builder.append(NEW_LINE);
         } catch (SQLException ex) {
