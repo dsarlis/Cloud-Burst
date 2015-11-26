@@ -174,8 +174,8 @@ public class MySQLService {
     public void appendTag(long tweetId, String tag) {
         try (Connection connection = factory.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(Q5);
-            preparedStatement.setLong(1, tweetId);
-            preparedStatement.setString(2, tag);
+            preparedStatement.setString(1, tag);
+            preparedStatement.setLong(2, tweetId);
 
             preparedStatement.executeUpdate();
 
