@@ -92,6 +92,7 @@ public class Q6Servlet extends HttpServlet {
 
             /* send it to the correct server */
             if (serverNumber != myNumber) {
+                System.out.println("I am server: " + myNumber +  ". Sending to server number: " + serverNumber);
                 response.setStatus(302);
                 response.setHeader("Location", "http://" + DNS_NAMES[serverNumber] + path);
                 return;
