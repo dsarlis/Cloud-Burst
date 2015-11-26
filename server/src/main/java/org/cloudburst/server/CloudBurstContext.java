@@ -9,10 +9,6 @@ import java.util.TimeZone;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.cloudburst.server.servlets.Q1Servlet;
-import org.cloudburst.server.servlets.Q2Servlet;
-import org.cloudburst.server.servlets.Q3Servlet;
-import org.cloudburst.server.servlets.Q4Servlet;
 import org.cloudburst.server.util.LoggingConfigurator;
 import org.cloudburst.server.util.MySQLConnectionFactory;
 import org.slf4j.Logger;
@@ -64,6 +60,7 @@ public class CloudBurstContext implements ServletContextListener {
         Q2Servlet.setFirstLine(teamId, awsId);
         Q3Servlet.setFirstLine(teamId, awsId);
         Q4Servlet.setFirstLine(teamId, awsId);
+        Q5Servlet.setFirstLine(teamId, awsId);
     }
 
     /**

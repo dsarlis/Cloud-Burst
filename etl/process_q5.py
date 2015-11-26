@@ -12,4 +12,4 @@ cumulative_off_by_one = 0
 for user, count in sorted_list:
     cumulative_off_by_one = cumulative
     cumulative += count
-    print "%d\t%d\t%d\t%d" % (user, count, cumulative, cumulative_off_by_one)
+    print "%d\t%d\t%d   " % (user, cumulative, cumulative_off_by_one)

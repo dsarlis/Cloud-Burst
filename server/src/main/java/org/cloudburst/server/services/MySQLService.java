@@ -33,7 +33,9 @@ public class MySQLService {
     private static final String Q2 = "SELECT * FROM tweets WHERE userId=? AND creationTime=? ORDER BY tweetId";
     private static final String Q3 = "(SELECT * FROM q3 WHERE userId=@userId AND creationTime BETWEEN '@start' AND '@end' AND impactScore > 0 ORDER BY impactScore DESC, tweetId ASC LIMIT @limit) UNION ALL (SELECT * FROM q3 WHERE userId=@userId AND creationTime BETWEEN '@start' AND '@end' AND impactScore < 0 ORDER BY impactScore ASC, tweetId ASC LIMIT @limit);";
     private static final String Q4 = "SELECT * FROM hashtags WHERE hashtag=? ORDER BY totalHashTagCount DESC, createdAtDate ASC LIMIT ?;";
-    private static final String Q5 = "SELECT cumulative, cumulative_off_by_one FROM total_tweets WHERE userId=? OR userId=?";
+    private static final String Q5 = "SELECT cumulative, cumulative_off_by_one FROM total_tweets WHERE " +
+            "userId=(SELECT MIN(userId) FROM total_tweets WHERE userId>=?) OR userId=(SELECT MAX(userId) " +
+            "FROM total_tweets WHERE userId<=?)";
 
     private final static Logger logger = LoggerFactory.getLogger(MySQLService.class);
 
@@ -145,7 +147,7 @@ public class MySQLService {
 
     public String getTotalTweets(long userIdMin, long userIdMax) {
         long cumulative = 0;
-        long cumulativeOffByOne = 0;
+        long cumulativeOffByOne = Long.MAX_VALUE;
         try (Connection connection = factory.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(Q5);
             preparedStatement.setLong(1, userIdMin);
@@ -165,7 +167,7 @@ public class MySQLService {
             logger.error("Problem executing statement", ex);
         }
 
-        return (cumulative - cumulativeOffByOne) + "";
+        return (cumulative - cumulativeOffByOne) + "\n";
     }
 
 }
