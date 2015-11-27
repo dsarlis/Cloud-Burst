@@ -22,9 +22,9 @@ public class Q6Servlet extends HttpServlet {
 
     private static final long serialVersionUID = -3974307160198438787L;
 
-    private static final String[] SERVERS = {"172.31.13.42"};
+    private static final String[] SERVERS = {"172.31.14.121", "172.31.8.58"};
 
-    private static final String[] DNS_NAMES = {"ec2...."};
+    private static final String[] DNS_NAMES = {"ec2-54-174-68-194.compute-1.amazonaws.com", "ec2-52-23-187-74.compute-1.amazonaws.com"};
 
     private static ConcurrentHashMap<Long, AtomicInteger> locks = new ConcurrentHashMap<Long, AtomicInteger>();
 
@@ -76,7 +76,7 @@ public class Q6Servlet extends HttpServlet {
 
         /* Parsing the request. */
         long tid = Long.parseLong(request.getParameter("tid"));
-        String opt = request.getParameter("s");
+        String opt = request.getParameter("opt");
 
         response.setHeader("Content-Type", "text/plain; charset=UTF-8");
         String result = FIRST_LINE;
@@ -86,19 +86,18 @@ public class Q6Servlet extends HttpServlet {
             result += "0\n";
             response.getOutputStream().write(result.getBytes());
         } else {
-            long tweetId = Long.parseLong(request.getParameter("tweetId"));
-            serverNumber = (tweetId + "").hashCode() % SERVERS.length;
+            serverNumber = (int) (tid % SERVERS.length);
             String path = request.getRequestURI() + "?" + request.getQueryString();
 
             /* send it to the correct server */
             if (serverNumber != myNumber) {
-                System.out.println("I am server: " + myNumber +  ". Sending to server number: " + serverNumber);
                 response.setStatus(302);
                 response.setHeader("Location", "http://" + DNS_NAMES[serverNumber] + path);
                 return;
             }
 
             /* the value is for the current server */
+            long tweetId = Long.parseLong(request.getParameter("tweetid"));
             int seq = Integer.parseInt(request.getParameter("seq"));
             if (seq == 1) {
                 locks.put(tid, new AtomicInteger(1));
