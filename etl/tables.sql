@@ -60,7 +60,7 @@ create index userid on total_tweets(userId);
 load data infile 'total_output' into table total_tweets fields terminated by '\t' lines terminated by '\n';
 
 CREATE TABLE IF NOT EXISTS q6 (
-    tweetId BIGINT primary key,
+    tweetId BIGINT,
     text VARBINARY(1024) not null,
     tag VARCHAR(1024)
 ) ENGINE = MyISAM;
