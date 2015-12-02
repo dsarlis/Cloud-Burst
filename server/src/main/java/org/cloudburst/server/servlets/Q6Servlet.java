@@ -22,9 +22,11 @@ public class Q6Servlet extends HttpServlet {
 
     private static final long serialVersionUID = -3974307160198438787L;
 
-    private static final String[] SERVERS = {"172.31.14.121", "172.31.8.58"};
+    private static final String[] SERVERS = {"172.31.6.27", "172.31.10.59", "172.31.4.41", "172.31.12.135", "172.31.4.28", "172.31.5.41", "172.31.10.244", "172.31.6.22"};
 
-    private static final String[] DNS_NAMES = {"ec2-54-174-68-194.compute-1.amazonaws.com", "ec2-52-23-187-74.compute-1.amazonaws.com"};
+    private static final String[] DNS_NAMES = {"ec2-54-173-118-126.compute-1.amazonaws.com", "ec2-54-173-233-159.compute-1.amazonaws.com", "ec2-54-85-128-4.compute-1.amazonaws.com",
+                                               "ec2-52-91-143-172.compute-1.amazonaws.com", "ec2-54-85-144-15.compute-1.amazonaws.com", "ec2-107-21-45-199.compute-1.amazonaws.com",
+                                               "ec2-54-173-10-52.compute-1.amazonaws.com", "ec2-54-88-16-7.compute-1.amazonaws.com"};
 
     private static ConcurrentHashMap<Long, AtomicInteger> locks = new ConcurrentHashMap<Long, AtomicInteger>();
 
