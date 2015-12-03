@@ -37,16 +37,19 @@ public class Q5Servlet extends HttpServlet {
         long userIdMax = Long.parseLong(request.getParameter("userid_max"));
 
         String key = userIdMin+ "_" + userIdMax;
+        /* Try to get the result from in-memory cache */
         String result = cache.get(userIdMin+ "_" + userIdMax);
 
         if (result == null) {
-        /* Generating the response. */
+            /* Generating the response. */
             result = FIRST_LINE + mySQLService.getTotalTweets(userIdMin, userIdMax);
+            /* Cache results in-memory to speed up the actual queries */
             if (cache.size() < 300000) {
                 cache.put(key, result);
             }
         }
 
+        /* return response */
         response.setHeader("Content-Type", "text/plain; charset=UTF-8");
         response.getOutputStream().write(result.getBytes());
     }

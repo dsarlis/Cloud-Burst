@@ -146,6 +146,7 @@ public class MySQLService {
         return builder.toString();
     }
 
+    /* Returns the total number of tweets in a given user range */
     public String getTotalTweets(long userIdMin, long userIdMax) {
         long cumulative = 0;
         long cumulativeOffByOne = Long.MAX_VALUE;
@@ -155,7 +156,13 @@ public class MySQLService {
             preparedStatement.setLong(2, userIdMax);
 
             ResultSet rs = preparedStatement.executeQuery();
-
+            /* For the given user id range get the cumulative values
+            * as well as the cumulative values off by one user
+            * and calculate the difference. This number is the
+            * number of total tweets in the given user range
+            * We have precomputed the cumulative values
+            * and stored them in the database
+            * */
             while (rs.next()) {
                 if (rs.getLong("cumulative") > cumulative) {
                     cumulative = rs.getLong("cumulative");
@@ -171,12 +178,14 @@ public class MySQLService {
         return (cumulative - cumulativeOffByOne) + "\n";
     }
 
+    /* Write a tag for a particular tweetID */
     public boolean appendTag(long tweetId, String tag) {
         try (Connection connection = factory.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(Q6Append);
             preparedStatement.setString(1, tag);
             preparedStatement.setLong(2, tweetId);
 
+            /* append the tag you got for this tweetID */
             preparedStatement.executeUpdate();
             return true;
         } catch (SQLException ex) {
@@ -185,6 +194,7 @@ public class MySQLService {
         }
     }
 
+    /* Get back the tag and text for a particular tweetID */
     public String readTweetWithTag(long tweetId) {
         StringBuilder builder = new StringBuilder();
         try (Connection connection = factory.getConnection()) {
@@ -193,6 +203,7 @@ public class MySQLService {
 
             ResultSet rs = preparedStatement.executeQuery();
 
+            /* Get the tag and text for this tweetID and return the result */
             while (rs.next()) {
                 builder.append(new String(rs.getBytes("text"), StandardCharsets.UTF_8).replace(";", "\n"));
                 String tag = rs.getString("tag");

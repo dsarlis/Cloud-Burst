@@ -23,6 +23,9 @@ public class Q5 {
 
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
 
+        /**
+         * Mapper method that keeps userID as the KEY and tweetID as a value
+         */
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             try {
                 String line = value.toString();
@@ -37,6 +40,7 @@ public class Q5 {
         }
     }
 
+    /* Reducer class that counts the total number of unique IDs for each userID it gets */
     public static class Reduce extends Reducer<Text, Text, Text, Text> {
 
         public void reduce(Text key, Iterable<Text> values, Context context)
