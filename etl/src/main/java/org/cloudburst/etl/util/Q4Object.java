@@ -1,7 +1,8 @@
 package org.cloudburst.etl.util;
 
 /**
- * Class that represent the Q4 data. It implement comparable so it can be sorted.
+ * Class that represent the Q4 data. It implement comparable so it can be
+ * sorted.
  */
 public class Q4Object implements Comparable {
     private String createdAt;
@@ -28,7 +29,10 @@ public class Q4Object implements Comparable {
         this.text = text;
     }
 
-    /* Sort by date in ascending order. If the dates are the same sort them by text in ascending order */
+    /*
+     * Sort by date in ascending order. If the dates are the same sort them by
+     * text in ascending order
+     */
     @Override
     public int compareTo(Object o) {
         if (this.createdAt.compareTo(((Q4Object) o).getCreatedAt()) == 0) {

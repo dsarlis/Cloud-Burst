@@ -5,14 +5,14 @@ package org.cloudburst.etl.model;
  */
 public class User {
 
-	private long userId;
+    private long userId;
 
-	public long getUserId() {
-		return userId;
-	}
+    public long getUserId() {
+        return userId;
+    }
 
-	public void setUserId(long userId) {
-		this.userId = userId;
-	}
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 
 }

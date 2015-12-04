@@ -3,9 +3,7 @@ package org.cloudburst.server.servlets;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +41,7 @@ public class Q4Servlet extends HttpServlet {
         String result = cache.get(key);
 
         if (result == null) {
-        /* Generating the response. */
+            /* Generating the response. */
             result = FIRST_LINE + mySQLService.getTopHashtags(hashTag, limit);
             if (cache.size() < 300000) {
                 cache.put(key, result);

@@ -1,7 +1,8 @@
 package org.cloudburst.etl.util;
 
 /**
- * Class that represent the Q3 data. It implement comparable so it can be sorted.
+ * Class that represent the Q3 data. It implement comparable so it can be
+ * sorted.
  */
 public class Q3Object implements Comparable<Q3Object> {
     private long impactScore;
@@ -40,6 +41,6 @@ public class Q3Object implements Comparable<Q3Object> {
             return tweetId == other.getTweetId() ? 0 : (tweetId < other.getTweetId() ? -1 : 1);
 
         }
-        return  impactScoreAbs < otherImpactScoreAbs ? 1 : -1;
+        return impactScoreAbs < otherImpactScoreAbs ? 1 : -1;
     }
 }

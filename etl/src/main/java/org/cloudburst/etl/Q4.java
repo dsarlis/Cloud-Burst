@@ -1,25 +1,34 @@
 package org.cloudburst.etl;
 
-import java.io.*;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.TimeZone;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
-import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.conf.*;
-import org.apache.hadoop.io.*;
-import org.apache.hadoop.mapreduce.*;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-
 import org.cloudburst.etl.model.Tweet;
-import org.cloudburst.etl.util.*;
+import org.cloudburst.etl.util.Q4Object;
+import org.cloudburst.etl.util.StringUtil;
+import org.cloudburst.etl.util.TweetUtil;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Main class to process Q4 files.
@@ -32,8 +41,8 @@ public class Q4 {
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
 
         /**
-         * Mapper method that keeps hashtag as the KEY, and all other requited fields as
-         * the VALUE.
+         * Mapper method that keeps hashtag as the KEY, and all other requited
+         * fields as the VALUE.
          */
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             try {
@@ -46,8 +55,11 @@ public class Q4 {
                     format.setTimeZone(TimeZone.getTimeZone(TweetUtil.TIME_ZONE_UTC_GMT));
                     String date = format.format(Date.parse(String.valueOf(tweet.getCreationTime())));
                     java.util.Map<String, Integer> hashtags = tweet.getHashTags();
-                    for (String hashtag: hashtags.keySet()) {
-                        /* Hashtag and text are printed in Hex to avoid encoding problems */
+                    for (String hashtag : hashtags.keySet()) {
+                        /*
+                         * Hashtag and text are printed in Hex to avoid encoding
+                         * problems
+                         */
                         StringBuilder outputValue = new StringBuilder();
                         outputValue.append(hashtags.get(hashtag).intValue()).append(UNDERSCORE);
                         outputValue.append(tweet.getUser().getUserId()).append(UNDERSCORE);
@@ -66,10 +78,10 @@ public class Q4 {
     public static class Reduce extends Reducer<Text, Text, Text, Text> {
 
         /**
-         * The Reducer method simply iterates over the values with same hashtag. Counts them, joins the used ids and prints those values.
+         * The Reducer method simply iterates over the values with same hashtag.
+         * Counts them, joins the used ids and prints those values.
          */
-        public void reduce(Text key, Iterable<Text> values, Context context)
-                throws IOException, InterruptedException {
+        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 
             String[] keyParts = key.toString().split(UNDERSCORE);
             long finalCount = 0;
@@ -113,11 +125,10 @@ public class Q4 {
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);
 
-         /* Set input and output file formats */
+        /* Set input and output file formats */
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
         job.waitForCompletion(true);
     }
 }
-

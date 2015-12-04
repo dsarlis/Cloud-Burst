@@ -1,14 +1,19 @@
 package org.cloudburst.etl.util;
 
-import com.google.gson.*;
-import org.cloudburst.etl.model.Tweet;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import org.cloudburst.etl.model.Tweet;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 public class TweetUtil {
     public static final String TIME_ZONE_UTC_GMT = "+0000";
@@ -28,7 +33,7 @@ public class TweetUtil {
     /**
      * Read json tweet.
      */
-    public static Tweet generateTweet(JsonElement jsonElement)  {
+    public static Tweet generateTweet(JsonElement jsonElement) {
         try {
             JsonObject tweetObject = jsonElement.getAsJsonObject();
             JsonObject userObject = tweetObject.getAsJsonObject("user");
@@ -49,7 +54,9 @@ public class TweetUtil {
                 }
             }
 
-            return new Tweet(tweetObject.get("id").getAsLong(), userObject.get("id").getAsLong(), userObject.get("followers_count").getAsInt(), tweetObject.get("created_at").getAsString(), tweetObject.get("text").getAsString(), hashTags);
+            return new Tweet(tweetObject.get("id").getAsLong(), userObject.get("id").getAsLong(),
+                    userObject.get("followers_count").getAsInt(), tweetObject.get("created_at").getAsString(),
+                    tweetObject.get("text").getAsString(), hashTags);
         } catch (Throwable ex) {
             return null;
         }
@@ -62,7 +69,8 @@ public class TweetUtil {
         if (oldTweetsDate == null) {
             try {
                 oldTweetsDate = toUTCDate(OLD_TWEETS_DATE_STR);
-            } catch (ParseException e) {}
+            } catch (ParseException e) {
+            }
         }
         return oldTweetsDate;
     }

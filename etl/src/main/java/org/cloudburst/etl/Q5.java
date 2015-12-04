@@ -1,7 +1,8 @@
 package org.cloudburst.etl;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
+import java.io.IOException;
+import java.util.HashSet;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -16,8 +17,8 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.cloudburst.etl.model.Tweet;
 import org.cloudburst.etl.util.TweetUtil;
 
-import java.io.IOException;
-import java.util.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 
 public class Q5 {
 
@@ -40,11 +41,13 @@ public class Q5 {
         }
     }
 
-    /* Reducer class that counts the total number of unique IDs for each userID it gets */
+    /*
+     * Reducer class that counts the total number of unique IDs for each userID
+     * it gets
+     */
     public static class Reduce extends Reducer<Text, Text, Text, Text> {
 
-        public void reduce(Text key, Iterable<Text> values, Context context)
-                throws IOException, InterruptedException {
+        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             HashSet<String> uniqueTweetIds = new HashSet<String>();
             /* Iterate over the values with the same key */
             for (Text value : values) {

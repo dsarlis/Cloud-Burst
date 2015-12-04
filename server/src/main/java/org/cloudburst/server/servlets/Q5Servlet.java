@@ -1,15 +1,16 @@
 package org.cloudburst.server.servlets;
 
-import org.cloudburst.server.services.MySQLService;
-import org.cloudburst.server.util.MySQLConnectionFactory;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.cloudburst.server.services.MySQLService;
+import org.cloudburst.server.util.MySQLConnectionFactory;
 
 /**
  * Servlet for Q5.
@@ -36,9 +37,9 @@ public class Q5Servlet extends HttpServlet {
         long userIdMin = Long.parseLong(request.getParameter("userid_min"));
         long userIdMax = Long.parseLong(request.getParameter("userid_max"));
 
-        String key = userIdMin+ "_" + userIdMax;
+        String key = userIdMin + "_" + userIdMax;
         /* Try to get the result from in-memory cache */
-        String result = cache.get(userIdMin+ "_" + userIdMax);
+        String result = cache.get(userIdMin + "_" + userIdMax);
 
         if (result == null) {
             /* Generating the response. */

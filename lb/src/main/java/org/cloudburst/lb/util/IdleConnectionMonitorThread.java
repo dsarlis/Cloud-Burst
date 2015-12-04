@@ -1,20 +1,20 @@
 package org.cloudburst.lb.util;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-
-import java.util.concurrent.TimeUnit;
 
 public class IdleConnectionMonitorThread extends Thread {
 
     private final HttpClientConnectionManager connMgr;
     private volatile boolean shutdown;
 
-    public IdleConnectionMonitorThread
-            (PoolingHttpClientConnectionManager connMgr) {
+    public IdleConnectionMonitorThread(PoolingHttpClientConnectionManager connMgr) {
         super();
         this.connMgr = connMgr;
     }
+
     @Override
     public void run() {
         try {
@@ -29,6 +29,7 @@ public class IdleConnectionMonitorThread extends Thread {
             shutdown();
         }
     }
+
     public void shutdown() {
         shutdown = true;
         synchronized (this) {

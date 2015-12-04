@@ -8,7 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 
 import org.cloudburst.server.util.MySQLConnectionFactory;
 import org.slf4j.Logger;
@@ -33,9 +32,9 @@ public class MySQLService {
     private static final String Q2 = "SELECT * FROM tweets WHERE userId=? AND creationTime=? ORDER BY tweetId";
     private static final String Q3 = "(SELECT * FROM q3 WHERE userId=@userId AND creationTime BETWEEN '@start' AND '@end' AND impactScore > 0 ORDER BY impactScore DESC, tweetId ASC LIMIT @limit) UNION ALL (SELECT * FROM q3 WHERE userId=@userId AND creationTime BETWEEN '@start' AND '@end' AND impactScore < 0 ORDER BY impactScore ASC, tweetId ASC LIMIT @limit);";
     private static final String Q4 = "SELECT * FROM hashtags WHERE hashtag=? ORDER BY totalHashTagCount DESC, createdAtDate ASC LIMIT ?;";
-    private static final String Q5 = "SELECT cumulative, cumulative_off_by_one FROM total_tweets WHERE " +
-            "userId=(SELECT MIN(userId) FROM total_tweets WHERE userId>=?) OR userId=(SELECT MAX(userId) " +
-            "FROM total_tweets WHERE userId<=?)";
+    private static final String Q5 = "SELECT cumulative, cumulative_off_by_one FROM total_tweets WHERE "
+            + "userId=(SELECT MIN(userId) FROM total_tweets WHERE userId>=?) OR userId=(SELECT MAX(userId) "
+            + "FROM total_tweets WHERE userId<=?)";
     private static final String Q6Append = "UPDATE q6 SET tag=? WHERE tweetId=?";
     private static final String Q6Read = "SELECT * FROM q6 WHERE tweetId=?";
 
@@ -156,13 +155,13 @@ public class MySQLService {
             preparedStatement.setLong(2, userIdMax);
 
             ResultSet rs = preparedStatement.executeQuery();
-            /* For the given user id range get the cumulative values
-            * as well as the cumulative values off by one user
-            * and calculate the difference. This number is the
-            * number of total tweets in the given user range
-            * We have precomputed the cumulative values
-            * and stored them in the database
-            * */
+            /*
+             * For the given user id range get the cumulative values as well as
+             * the cumulative values off by one user and calculate the
+             * difference. This number is the number of total tweets in the
+             * given user range We have precomputed the cumulative values and
+             * stored them in the database
+             */
             while (rs.next()) {
                 if (rs.getLong("cumulative") > cumulative) {
                     cumulative = rs.getLong("cumulative");

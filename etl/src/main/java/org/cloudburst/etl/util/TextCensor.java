@@ -1,10 +1,11 @@
 package org.cloudburst.etl.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
 
 /**
  * Class for censoring the banned words in the tweet text.
@@ -36,7 +37,7 @@ public class TextCensor {
     private static void populateBannedSetOfWords() throws IOException {
         try {
             BufferedReader reader = new BufferedReader(
-                new InputStreamReader(TextCensor.class.getResourceAsStream(BANNED_LIST_FILE_NAME)));
+                    new InputStreamReader(TextCensor.class.getResourceAsStream(BANNED_LIST_FILE_NAME)));
             String line = null;
             while ((line = reader.readLine()) != null) {
                 bannedSetOfWords.add(getROT13DecryptedWord(line.trim()).toLowerCase());
@@ -102,4 +103,3 @@ public class TextCensor {
         return censoredContent.toString();
     }
 }
-

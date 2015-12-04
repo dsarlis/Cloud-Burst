@@ -3,9 +3,6 @@ package org.cloudburst.etl;
 import java.io.IOException;
 import java.text.ParseException;
 
-import com.google.gson.JsonElement;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -18,12 +15,12 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.cloudburst.etl.model.Tweet;
-import org.cloudburst.etl.util.StringUtil;
 import org.cloudburst.etl.util.TextCensor;
-
-import com.google.gson.JsonSyntaxException;
 import org.cloudburst.etl.util.TextSentimentGrader;
 import org.cloudburst.etl.util.TweetUtil;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Main class to process Q2 files.
@@ -33,8 +30,8 @@ public class Q2 {
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
 
         /**
-         * Mapper method that keeps TweetId as the KEY, and all other required fields as
-         * the VALUE.
+         * Mapper method that keeps TweetId as the KEY, and all other required
+         * fields as the VALUE.
          */
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             try {
@@ -51,7 +48,8 @@ public class Q2 {
                 }
 
             } catch (JsonSyntaxException e) {
-			} catch (ParseException e) {}
+            } catch (ParseException e) {
+            }
         }
     }
 

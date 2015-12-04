@@ -24,19 +24,15 @@ public class CloseableHttpClientFactory {
         ConnectionSocketFactory plainConnectionSocketFactory = PlainConnectionSocketFactory.getSocketFactory();
         LayeredConnectionSocketFactory sslConnectionSocketFactory = SSLConnectionSocketFactory.getSocketFactory();
 
-        Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register("http", plainConnectionSocketFactory)
-                .register("https", sslConnectionSocketFactory)
-                .build();
+        Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory> create()
+                .register("http", plainConnectionSocketFactory).register("https", sslConnectionSocketFactory).build();
 
         PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager(registry);
         cm.setMaxTotal(maxTotal);
         cm.setDefaultMaxPerRoute(maxPerRoute);
 
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setSocketTimeout(soTimeout * 1000)
-                .setConnectTimeout(connectionTimeout * 1000)
-                .build();
+        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(soTimeout * 1000)
+                .setConnectTimeout(connectionTimeout * 1000).build();
 
         IdleConnectionMonitorThread staleMonitor = new IdleConnectionMonitorThread(cm);
         staleMonitor.setDaemon(true);
@@ -46,7 +42,8 @@ public class CloseableHttpClientFactory {
             @Override
             public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
                 // Honor 'keep-alive' header
-                HeaderElementIterator it = new BasicHeaderElementIterator(response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+                HeaderElementIterator it = new BasicHeaderElementIterator(
+                        response.headerIterator(HTTP.CONN_KEEP_ALIVE));
                 while (it.hasNext()) {
                     HeaderElement he = it.nextElement();
                     String param = he.getName();
@@ -64,6 +61,7 @@ public class CloseableHttpClientFactory {
 
         };
 
-        return HttpClients.custom().setConnectionManager(cm).setDefaultRequestConfig(requestConfig).setKeepAliveStrategy(keepAliveStrategy).build();
+        return HttpClients.custom().setConnectionManager(cm).setDefaultRequestConfig(requestConfig)
+                .setKeepAliveStrategy(keepAliveStrategy).build();
     }
 }

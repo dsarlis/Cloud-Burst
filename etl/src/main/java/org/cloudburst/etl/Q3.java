@@ -1,23 +1,35 @@
 package org.cloudburst.etl;
 
-import java.io.*;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.TimeZone;
 
-import com.google.gson.*;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.conf.*;
-import org.apache.hadoop.io.*;
-import org.apache.hadoop.mapreduce.*;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-
 import org.cloudburst.etl.model.Tweet;
-import org.cloudburst.etl.util.*;
+import org.cloudburst.etl.util.Q3Object;
+import org.cloudburst.etl.util.TextCensor;
+import org.cloudburst.etl.util.TextSentimentGrader;
+import org.cloudburst.etl.util.TweetUtil;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Main class to process Q3 files.
@@ -29,8 +41,8 @@ public class Q3 {
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
 
         /**
-         * Mapper method that keeps userId and date as the KEY, and all other required fields as
-         * the VALUE.
+         * Mapper method that keeps userId and date as the KEY, and all other
+         * required fields as the VALUE.
          */
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             try {
@@ -70,11 +82,11 @@ public class Q3 {
     public static class Reduce extends Reducer<Text, Text, Text, Text> {
 
         /**
-         * The Reducer method iterates over the values with same key (userId and date). Then it sorts them. Finally it print first the
-         * 10 best positive and 10 worst negative.
+         * The Reducer method iterates over the values with same key (userId and
+         * date). Then it sorts them. Finally it print first the 10 best
+         * positive and 10 worst negative.
          */
-        public void reduce(Text key, Iterable<Text> values, Context context)
-                throws IOException, InterruptedException {
+        public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             HashSet<String> uniqueTweetIds = new HashSet<String>();
             ArrayList<Q3Object> posTweets = new ArrayList<Q3Object>();
             ArrayList<Q3Object> negTweets = new ArrayList<Q3Object>();
@@ -103,13 +115,15 @@ public class Q3 {
                 }
             }
 
-            /* Sort the objects according to the sorting criteria (see Q3Object) */
+            /*
+             * Sort the objects according to the sorting criteria (see Q3Object)
+             */
             Collections.sort(posTweets);
             Collections.sort(negTweets);
 
             int count = 0;
             /* Keep at most 10 positive tweets per user and date */
-            for (Q3Object posTweet: posTweets) {
+            for (Q3Object posTweet : posTweets) {
                 count++;
                 if (count > 10) {
                     break;
@@ -124,7 +138,7 @@ public class Q3 {
             }
             count = 0;
             /* Keep at most 10 negative tweets per user and date */
-            for (Q3Object negTweet: negTweets) {
+            for (Q3Object negTweet : negTweets) {
                 count++;
                 if (count > 10) {
                     break;
@@ -165,4 +179,3 @@ public class Q3 {
     }
 
 }
-

@@ -3,9 +3,7 @@ package org.cloudburst.server.servlets;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -41,12 +39,12 @@ public class Q3Servlet extends HttpServlet {
         final String userId = request.getParameter("userid");
         final String limit = request.getParameter("n");
         StringBuilder keyBuilder = new StringBuilder().append(start_date).append(end_date).append(userId).append(limit);
-        String key =keyBuilder.toString();
+        String key = keyBuilder.toString();
 
         String result = cache.get(key);
 
         if (result == null) {
-        /* Gets the response from the SQL Service. */
+            /* Gets the response from the SQL Service. */
             result = FIRST_LINE + mySQLService.getTweetImpactScore(start_date, end_date, userId, limit);
             if (cache.size() < 300000) {
                 cache.put(key, result);
